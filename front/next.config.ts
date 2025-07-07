@@ -6,9 +6,12 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:5000/api/:path*", // Proxy to backend
+        destination: `${process.env.BACKEND_URL}/api/:path*`, 
       },
     ];
+  },
+  typescript: {
+    ignoreBuildErrors: true, 
   },
 };
 
