@@ -27,7 +27,7 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
   const handelSignOut = () => {
     localStorage.removeItem("currentUser");
     dispatch(signout());
-    router.push("/login");
+    router.push("/");
   };
   return (
     <React.Fragment>
