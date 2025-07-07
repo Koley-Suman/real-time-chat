@@ -37,7 +37,7 @@ import { url } from "inspector";
 import ImageUploadPreview from "./messagePhoto";
 import SignOut from "./signOut";
 
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = process.env.BACKEND_URL;
 var selectedChatCompare;
 
 function Chat() {
