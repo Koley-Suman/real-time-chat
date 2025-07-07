@@ -37,7 +37,7 @@ connectToDB().then(() => {
 const io = new SocketIOServer(server,{
     pingTimeout:60000,
         cors:{
-            origin:"http://localhost:3000",
+            origin:process.env.FRONT_END_URL,
         }
 });
 
