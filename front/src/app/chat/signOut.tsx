@@ -38,7 +38,7 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
       >
         <DrawerContent className="bg-gray-400">
           <DrawerHeader>
-            <DrawerClose className="absolute right-4 top-4 text-2xl cursor-pointer">
+            <DrawerClose className="absolute right-4 top-4 text-2xl cursor-pointer" asChild>
               &times;
             </DrawerClose>
           </DrawerHeader>
@@ -64,7 +64,7 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
             </DrawerTitle>
           </div>
 
-              <DrawerClose>
+              <DrawerClose asChild>
           <div className="w-full h-10 mt-6 flex items-center justify-center">
             <Button className=" w-[50%]" onClick={handelSignOut} type="button">
               Sign Out

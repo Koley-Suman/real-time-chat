@@ -2,8 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import Picker from '@emoji-mart/react';
-import data from '@emoji-mart/data';
+import EmojiPicker from "emoji-picker-react";
 
 // import "emoji-mart/css/emoji-mart.css";
 import {
@@ -65,8 +64,8 @@ function Chat() {
   // state hook for drawer----
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerData, setDrawerData] = useState<any>(null);
-  const [signOutDrawer,setSignOutDrawer]=useState(false);
-  
+  const [signOutDrawer, setSignOutDrawer] = useState(false);
+
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const inputRef = useRef(null);
 
@@ -85,7 +84,8 @@ function Chat() {
     (state: any) => state.userChat.currentUser?._id
   );
   const currentUser = useSelector(
-    (state: any) => state.userChat.currentUser?.pic)
+    (state: any) => state.userChat.currentUser?.pic
+  );
   const allMssage = useSelector((state: any) => state.userChat.allMessages);
   console.log(allMssage);
 
@@ -241,7 +241,6 @@ function Chat() {
 
   const inputmessageRef = useRef<HTMLInputElement>(null);
 
-
   const toggleEmojiPicker = () => {
     setShowEmojiPicker((prev) => !prev);
 
@@ -250,12 +249,11 @@ function Chat() {
       // inputmessageRef.current?.blur();
     }
   };
-  const handleEmojiSelect = (emoji:any) => {
-    setNewMessage((prev) => prev + emoji.native);
+  const handleEmojiSelect = (emoji: any) => {
+    setNewMessage((prev) => prev + emoji.emoji);
   };
 
   console.log(ENDPOINT);
-  
 
   return (
     <div className="h-screen w-screen md:p-6 p-0 box-border bg-gray-600">
@@ -268,7 +266,10 @@ function Chat() {
         >
           <div className="h-[10%] w-full flex items-center justify-between px-4  bg-gray-900  box-border mb-2">
             {/* current user picture */}
-            <Avatar className="w-10 h-10 " onClick={()=>setSignOutDrawer(true)}>
+            <Avatar
+              className="w-10 h-10 "
+              onClick={() => setSignOutDrawer(true)}
+            >
               <AvatarImage
                 src={currentUser || "https://github.com/shadcn.png"}
                 className="object-cover"
@@ -282,7 +283,6 @@ function Chat() {
               className="w-full bg-gray-600 mr-3 text-gray-100 border-none"
               onChange={(e) => setSearch(e.target.value)}
               value={search}
-             
             />
           </div>
           <div
@@ -520,10 +520,8 @@ function Chat() {
             </div>
           </div>
 
-
           {/* imojii */}
 
-          
           <div className="createMessage flex h-[12%] items-center w-full bg-gray-900 text-gray-100 justify-between md:justify-evenly">
             {selectedChat ? (
               <React.Fragment>
@@ -534,10 +532,7 @@ function Chat() {
                       size={22}
                       onClick={toggleEmojiPicker}
                     />
-                    <ImageUploadPreview
-                      chatId={selectedChat}
-                      socket={socket}
-                    />
+                    <ImageUploadPreview chatId={selectedChat} socket={socket} />
                   </div>
 
                   <Input
@@ -551,10 +546,14 @@ function Chat() {
                   />
                 </div>
                 <div
-                  className="w-[13%] md:w-[10%] flex justify-center items-center" 
+                  className="w-[13%] md:w-[10%] flex justify-center items-center"
                   onClick={senduserMessage}
                 >
-                  <SendHorizonalIcon className={`text-slate font-thin ${newMessage.length>0?"block":"hidden"}`} />
+                  <SendHorizonalIcon
+                    className={`text-slate font-thin ${
+                      newMessage.length > 0 ? "block" : "hidden"
+                    }`}
+                  />
                 </div>
               </React.Fragment>
             ) : (
@@ -565,7 +564,11 @@ function Chat() {
       </div>
       {showEmojiPicker && (
         <div className="absolute bottom-6 left-10 w-fit z-50">
-           <Picker data={data} onEmojiSelect={handleEmojiSelect} previewPosition="none"/>
+          <EmojiPicker
+            onEmojiClick={handleEmojiSelect}
+            width={250}
+            height={300}
+          />
         </div>
       )}
       <UserDrawer
@@ -573,7 +576,10 @@ function Chat() {
         drawerDatas={drawerData}
         setDrawerOpen={setDrawerOpen}
       />
-      <SignOut signOutDrawer={signOutDrawer} setSignOutDrawer={setSignOutDrawer}/>
+      <SignOut
+        signOutDrawer={signOutDrawer}
+        setSignOutDrawer={setSignOutDrawer}
+      />
     </div>
   );
 }
