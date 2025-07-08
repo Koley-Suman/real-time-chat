@@ -10,7 +10,7 @@ export default function Home() {
 
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
-    if (currentUser) {
+    if (currentUser!=null) {
       router.push("/chat");
     }
   }, []);

@@ -254,6 +254,9 @@ function Chat() {
     setNewMessage((prev) => prev + emoji.native);
   };
 
+  console.log(ENDPOINT);
+  
+
   return (
     <div className="h-screen w-screen md:p-6 p-0 box-border bg-gray-600">
       <div className="h-full w-full flex drop-shadow-md bg-white">
