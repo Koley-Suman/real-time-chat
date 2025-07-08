@@ -33,6 +33,8 @@ connectToDB().then(() => {
 }
 )
 
+console.log(process.env.FRONT_END_URL);
+
 
 const io = new SocketIOServer(server,{
     pingTimeout:60000,

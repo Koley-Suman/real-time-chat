@@ -37,7 +37,7 @@ import { url } from "inspector";
 import ImageUploadPreview from "./messagePhoto";
 import SignOut from "./signOut";
 
-const ENDPOINT = process.env.BACKEND_URL;
+const ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_URL;
 var selectedChatCompare;
 
 function Chat() {
@@ -255,7 +255,7 @@ function Chat() {
   };
 
   return (
-    <div className="h-screen w-screen md:p-6 box-border bg-gray-600">
+    <div className="h-screen w-screen md:p-6 p-0 box-border bg-gray-600">
       <div className="h-full w-full flex drop-shadow-md bg-white">
         <div
           className={`w-1/4 border-r h-full py-4 md:py-0  bg-gray-800 box-border overflow-hidden md:block
@@ -533,6 +533,7 @@ function Chat() {
                     />
                     <ImageUploadPreview
                       chatId={selectedChat}
+                      socket={socket}
                     />
                   </div>
 
