@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { addMessage, sendMessage } from "@/store/reducer";
 import { Socket } from "socket.io-client";
+import Image from "next/image";
 
 interface ImageUploadPreviewProps {
   chatId: string;
@@ -80,7 +81,7 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
               <X />
             </div>
             <h2 className="text-lg font-semibold mb-2"> Image</h2>
-            <img
+            <Image
               src={imagePreviewUrl!}
               alt="Preview"
               className="rounded w-full max-w-full max-h-60 object-contain mb-4"

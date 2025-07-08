@@ -35,6 +35,7 @@ import UserDrawer from "./drawer";
 import { url } from "inspector";
 import ImageUploadPreview from "./messagePhoto";
 import SignOut from "./signOut";
+import Image from "next/image";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_URL;
 var selectedChatCompare;
@@ -471,7 +472,7 @@ function Chat() {
                             )}
                             <div>
                               {message.image ? (
-                                <img
+                                <Image
                                   src={message.image}
                                   alt="sent"
                                   className=" object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"

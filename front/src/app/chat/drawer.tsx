@@ -3,21 +3,18 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
+ 
 } from "@/components/ui/drawer";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   CheckIcon,
-  DeleteIcon,
-  Icon,
+
   PlusIcon,
-  RemoveFormattingIcon,
+
   TrashIcon,
 } from "lucide-react";
 import { AppDispatch } from "@/store/store";
