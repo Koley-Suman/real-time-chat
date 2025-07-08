@@ -9,15 +9,18 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig ={
-  extends: [
-    ...compat.extends("next/core-web-vitals", "next/typescript"),
-  ],
-  parser: '@typescript-eslint/parser',
-  files: ["**/*.{ts,tsx,js,jsx}"],
-  rules: {
-    '@typescript-eslint/no-explicit-any': 'off', // Disables the rule globally
-  },
-}
+export default [
+  // ✅ Converts legacy "extends"
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
 
-export default eslintConfig;
+  // ✅ Flat Config block with parser and rules
+  {
+    files: ["**/*.{ts,tsx,js,jsx}"],
+    languageOptions: {
+      parser: tsParser
+    },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off"
+    }
+  }
+];
