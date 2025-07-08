@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { CrossIcon, ImageIcon, SendHorizonalIcon, X } from "lucide-react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { ImageIcon, Loader2Icon, SendHorizonalIcon, X } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { addMessage, sendMessage } from "@/store/reducer";
+import { sendMessage } from "@/store/reducer";
 import { Socket } from "socket.io-client";
-import Image from "next/image";
 
 interface ImageUploadPreviewProps {
   chatId: string;
@@ -19,6 +18,8 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+
+const loading = useSelector((state: any) => state.userChat.loading);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -81,18 +82,25 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
               <X />
             </div>
             <h2 className="text-lg font-semibold mb-2"> Image</h2>
-            <Image
+            <img
               src={imagePreviewUrl!}
               alt="Preview"
               className="rounded w-full max-w-full max-h-60 object-contain mb-4"
             />
             <div className="flex justify-end gap-2">
-              <button
+              {!loading?(<button
                 onClick={sendImageMessage}
                 className="px-4 py-1 bg-violet-800 text-white rounded hover:bg-violet-900 cursor-pointer"
               >
                 <SendHorizonalIcon />
+              </button>):(
+                <button
+                className="px-4 py-1 bg-violet-800 text-white rounded hover:bg-violet-900 cursor-not-allowed"
+              >
+                <Loader2Icon className="animate-spin" />
               </button>
+              )}
+              
             </div>
           </div>
         </div>

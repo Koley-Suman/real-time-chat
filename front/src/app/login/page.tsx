@@ -110,14 +110,13 @@ export default function CardDemo() {
               </div>
               <div className="grid gap-2">
                 {loading ? (
-                  <Button type="button" className="w-full">
+                  <Button type="button" className="w-full bg-violet-900 cursor-not-allowed">
                     <Loader2Icon className="animate-spin" />
                   </Button>
                 ) : (
                   <Button
                     type="submit"
                     className="w-full bg-violet-800 hover:bg-violet-900 cursor-pointer"
-                    // onClick={handleSubmit}
                   >
                     Login
                   </Button>

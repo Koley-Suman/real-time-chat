@@ -1,6 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog } from "@/components/ui/dialog";
+
 import { Input } from "@/components/ui/input";
 import EmojiPicker from "emoji-picker-react";
 
@@ -14,16 +14,7 @@ import {
   sendMessage,
 } from "@/store/reducer";
 import { AppDispatch } from "@/store/store";
-import {
-  ArrowLeft,
-  ImageIcon,
-  Send,
-  SendHorizonalIcon,
-  SkipBack,
-  SmileIcon,
-  StepBack,
-  StepBackIcon,
-} from "lucide-react";
+import { ArrowLeft, SendHorizonalIcon, SmileIcon } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DialogDemo } from "./dialogBox";
@@ -36,6 +27,7 @@ import { url } from "inspector";
 import ImageUploadPreview from "./messagePhoto";
 import SignOut from "./signOut";
 import Image from "next/image";
+import { SkeletonDemo } from "./skeleton";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_URL;
 var selectedChatCompare;
@@ -81,6 +73,7 @@ function Chat() {
     },
   };
 
+  const loading = useSelector((state: any) => state.userChat.loading);
   const currentUserId = useSelector(
     (state: any) => state.userChat.currentUser?._id
   );
@@ -297,77 +290,83 @@ function Chat() {
                 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500
                   "
           >
-            {search.trim() && searchUser && searchUser.length > 0
-              ? searchUser.map((user: any) => (
-                  <div
-                    key={`search-${user._id}`}
-                    className="contacts w-full h-[12%] p-2 text-gray-100 hover:bg-gray-700 bg-gray-800 flex items-center  cursor-pointer"
-                    onClick={() => handleSelectSearchUser(user)}
-                  >
-                    <Avatar>
-                      <AvatarImage
-                        src={user.pic || "https://github.com/shadcn.png"}
-                        alt={user.name}
-                      />
-                      <AvatarFallback>
-                        {user.name?.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="ml-5">{user.name}</span>
-                  </div>
-                ))
-              : allChat && allChat.length > 0
-              ? allChat.map((chat: any) => (
-                  <div
-                    key={`chat-${chat._id}`}
-                    className="contacts w-full h-[12%] p-2 bg-gray-800 hover:bg-gray-700 text-gray-100 flex items-center "
-                    onClick={() => selectChat(chat._id, chat)}
-                  >
-                    <Avatar>
-                      <AvatarImage
-                        src={
-                          chat.isGroupChat === true
-                            ? chat.groupPic
-                            : chat.users?.find(
-                                (u: any) => u._id !== currentUserId
-                              ).pic || "https://github.com/shadcn.png"
-                        }
-                      />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <span className="ml-5 text-base">
-                        {chat.isGroupChat == true
-                          ? chat.chatName
+            {loading ? (
+              <SkeletonDemo />
+            ) : search.trim() && searchUser && searchUser.length > 0 ? (
+              searchUser.map((user: any) => (
+                <div
+                  key={`search-${user._id}`}
+                  className="contacts w-full h-[12%] p-2 text-gray-100 hover:bg-gray-700 bg-gray-800 flex items-center  cursor-pointer"
+                  onClick={() => handleSelectSearchUser(user)}
+                >
+                  <Avatar>
+                    <AvatarImage
+                      src={user.pic || "https://github.com/shadcn.png"}
+                      alt={user.name}
+                    />
+                    <AvatarFallback>
+                      {user.name?.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="ml-5">{user.name}</span>
+                </div>
+              ))
+            ) : allChat && allChat.length > 0 ? (
+              allChat.map((chat: any) => (
+                <div
+                  key={`chat-${chat._id}`}
+                  className="contacts w-full h-[12%] p-2 bg-gray-800 hover:bg-gray-700 text-gray-100 flex items-center "
+                  onClick={() => selectChat(chat._id, chat)}
+                >
+                  <Avatar>
+                    <AvatarImage
+                      src={
+                        chat.isGroupChat === true
+                          ? chat.groupPic
                           : chat.users?.find(
                               (u: any) => u._id !== currentUserId
-                            ).name}
-                      </span>
+                            ).pic || "https://github.com/shadcn.png"
+                      }
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <span className="ml-5 text-base">
                       {chat.isGroupChat == true
-                        ? chat.latestMessage && (
-                            <p className="truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 ">
-                              {chat?.latestMessage?.sender?._id ===
-                              currentUserId
-                                ? "you"
-                                : chat?.latestMessage?.sender?.name}{" "}
-                              : {chat?.latestMessage?.content}
-                            </p>
-                          )
-                        : chat.latestMessage && (
-                            <p
-                              className={`truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 `}
-                            >
-                              {chat?.latestMessage?.sender?._id ===
-                              currentUserId
-                                ? "you : "
-                                : ""}{" "}
-                              {chat?.latestMessage?.content}
-                            </p>
-                          )}
-                    </div>
+                        ? chat.chatName
+                        : chat.users?.find((u: any) => u._id !== currentUserId)
+                            .name}
+                    </span>
+                    {chat.isGroupChat == true
+                      ? chat.latestMessage && (
+                          <p className="truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 ">
+                            {chat?.latestMessage?.sender?._id === currentUserId
+                              ? "you"
+                              : chat?.latestMessage?.sender?.name}{" "}
+                            : {chat?.latestMessage?.content}
+                          </p>
+                        )
+                      : chat.latestMessage && (
+                          <p
+                            className={`truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 `}
+                          >
+                            {chat?.latestMessage?.sender?._id === currentUserId
+                              ? "you : "
+                              : ""}{" "}
+                            {chat?.latestMessage?.content}
+                          </p>
+                        )}
                   </div>
-                ))
-              : "lodding..."}
+                </div>
+              ))
+            ) : (
+              <>
+              <div className="w-full h-full flex items-center justify-center">
+
+              <p className="text-gray-400 text-2xl font-bold">Please Search The Chat User</p>
+              </div>
+              </>
+            )}
             <div className="w-full h-[10%]"></div>
           </div>
         </div>
@@ -472,7 +471,7 @@ function Chat() {
                             )}
                             <div>
                               {message.image ? (
-                                <Image
+                                <img
                                   src={message.image}
                                   alt="sent"
                                   className=" object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"

@@ -389,9 +389,14 @@ export const counterSlice = createSlice({
       })
       .addCase(fetchAllChats.fulfilled, (state, action) => {
         state.allChat = action.payload;
+        state.loading=false;
+      })
+      .addCase(fetchAllChats.pending, (state, action) => {
+        state.loading=true;
       })
       .addCase(fetchAllChats.rejected, (state, action) => {
         state.allChat = [];
+        state.loading=false;
       })
       .addCase(createChat.fulfilled, (state, action) => {
         state.allChat.push(action.payload);
@@ -404,6 +409,10 @@ export const counterSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.allMessages.push(action.payload);
+        state.loading=false;
+      })
+      .addCase(sendMessage.pending, (state, action) => {
+        state.loading=true;
       })
       .addCase(contacts.fulfilled, (state, action) => {
         state.searchUser = action.payload;
