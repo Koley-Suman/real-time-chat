@@ -14,6 +14,7 @@ const eslintConfig ={
     ...compat.extends("next/core-web-vitals", "next/typescript"),
   ],
   parser: '@typescript-eslint/parser',
+  files: ["**/*.{ts,tsx,js,jsx}"],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off', // Disables the rule globally
   },
