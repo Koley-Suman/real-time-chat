@@ -260,7 +260,7 @@ function Chat() {
     <div className="h-screen w-screen md:p-6 p-0 box-border bg-gray-600">
       <div className="h-full w-full flex drop-shadow-md bg-white">
         <div
-          className={`w-1/4 border-r h-full py-4 md:py-0  bg-gray-800 box-border overflow-hidden md:block
+          className={`w-1/4 border-r h-full md:py-0  bg-gray-800 box-border overflow-hidden md:block
         ${showMessages ? "hidden" : "block"} 
         md:w-1/4
         fixed top-0 left-0 w-full h-full z-20 md:static md:z-auto`}
