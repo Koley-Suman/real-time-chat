@@ -125,6 +125,25 @@ function Chat() {
     }
   };
 
+  const handleKeyDown = async (e: any) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // prevent newline if textarea
+      try {
+        const data = await dispatch(
+          sendMessage({
+            chatId: selectedChat,
+            content: newMessage,
+          })
+        );
+        socket?.emit("new Message", data.payload);
+        socket?.emit("stop typing", selectedChat);
+        setNewMessage("");
+      } catch (error) {
+        console.error("not send message");
+      }
+    }
+  };
+
   useEffect(() => {
     const handler = setTimeout(() => {
       if (search.trim() !== "") {
@@ -273,7 +292,7 @@ function Chat() {
           </div>
           <div className="search mb-2 h-[6%] w-full px-4">
             <Input
-              placeholder="Type a message"
+              placeholder="search for chat"
               className="w-full bg-gray-600 mr-3 text-gray-100 border-none"
               onChange={(e) => setSearch(e.target.value)}
               value={search}
@@ -361,10 +380,11 @@ function Chat() {
               ))
             ) : (
               <>
-              <div className="w-full h-full flex items-center justify-center">
-
-              <p className="text-gray-400 text-2xl font-bold">Please Search The Chat User</p>
-              </div>
+                <div className="w-full h-full flex items-center justify-center">
+                  <p className="text-gray-400 text-2xl font-bold">
+                    Please Search The Chat User
+                  </p>
+                </div>
               </>
             )}
             <div className="w-full h-[10%]"></div>
@@ -542,6 +562,7 @@ function Chat() {
                     value={newMessage}
                     ref={inputmessageRef}
                     onFocus={() => setShowEmojiPicker(false)}
+                    onKeyDown={handleKeyDown}
                     // onFocus={handleInputFocus}
                   />
                 </div>
