@@ -8,6 +8,8 @@ import messageRoutes from "./routes/messageRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 import {Server as SocketIOServer} from "socket.io";
 import http from "http";
+import cors from 'cors';
+
 
 
 dotenv.config({
@@ -19,8 +21,9 @@ app.use("/api/chat",chatRoutes);
 app.use("/api/message",messageRoutes)
 app.use(notFound);
 app.use(errorHandler);
-app.use(express.json()); // No size limit set
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 
 const server = http.createServer(app);
 
@@ -33,6 +36,10 @@ connectToDB().then(() => {
 }
 )
 
+app.use(cors({
+  origin: process.env.FRONT_END_URL,
+  credentials: true,
+}));
 
 
 

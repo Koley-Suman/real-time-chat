@@ -15,6 +15,8 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 
     if (req.file) {
+        console.log("File received:", req.file); // is it undefined?
+        console.log("Uploading from path:", req.file.path);
         try {
             const filePath = path.resolve(req.file.path);
             const cloudResult = await uploadCloudanary(req.file.path);

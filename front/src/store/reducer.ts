@@ -50,6 +50,7 @@ interface UserState {
   }[];
   searchUser: [];
   loading:boolean;
+  imgLoad:boolean;
 }
 
 const signIn = createAsyncThunk(
@@ -336,7 +337,8 @@ const initialState: UserState = {
   allChat: [],
   allMessages: [],
   searchUser: [],
-  loading:false
+  loading:false,
+  imgLoad:false
 };
 
 export const counterSlice = createSlice({
@@ -409,10 +411,10 @@ export const counterSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.allMessages.push(action.payload);
-        state.loading=false;
+        state.imgLoad=false;
       })
       .addCase(sendMessage.pending, (state, action) => {
-        state.loading=true;
+        state.imgLoad=true;
       })
       .addCase(contacts.fulfilled, (state, action) => {
         state.searchUser = action.payload;

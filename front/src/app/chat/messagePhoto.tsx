@@ -19,7 +19,7 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
-const loading = useSelector((state: any) => state.userChat.loading);
+const loading = useSelector((state: any) => state.userChat.imgLoad);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -29,6 +29,10 @@ const loading = useSelector((state: any) => state.userChat.loading);
       setShowImageModal(true);
     }
   };
+
+  console.log("chat Id",chatId);
+  console.log("image file",selectedImage);
+  
 
   const sendImageMessage = async () => {
     if (!chatId || !selectedImage) return;
