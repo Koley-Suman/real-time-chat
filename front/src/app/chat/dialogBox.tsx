@@ -22,6 +22,7 @@ export function DialogDemo() {
   const [groupName, setGroupName] = useState("");
   const [pic, setPic] = useState<File | null>(null);
   const [resetPhotoKey, setResetPhotoKey] = useState(0);
+  const [errorMessage,setErrorMessage]=useState("");
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -29,10 +30,11 @@ export function DialogDemo() {
   }, [selectedChatId]);
 
   const createGroup = async () => {
-    if (!groupName || selectedChatId.length < 1) {
-      console.log("enter group name and select group member");
+    if (!groupName || selectedChatId.length < 2||!pic) {
+      setErrorMessage("enter group name, group photo and select group member minimum two");
+      return;
     }
-    if (selectedChatId.length < 1) return;
+    
     try {
       await dispatch(
         createNewGroup({
@@ -74,7 +76,8 @@ export function DialogDemo() {
               />
             </div>
           </div>
-          <div className="md:h-[230px] h-full   overflow-auto p-3 box-border">
+          <div className="md:h-[230px] h-full   overflow-auto p-2 box-border">
+            {errorMessage.length>0?(<p className="text-red-400">{errorMessage}</p>):""}
             <GroupContacts
               setSelectedChatId={setSelectedChatId}
               selectedChatId={selectedChatId}
