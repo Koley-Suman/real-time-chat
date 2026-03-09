@@ -70,7 +70,6 @@ function Chat() {
 
   const allMssage = useSelector((state: any) => state.message.allMessages);
 
-
   useEffect(() => {
     const fetchChats = async () => {
       await dispatch(fetchAllChats());
@@ -82,7 +81,7 @@ function Chat() {
     setSelectedChat(id);
     dispatch(allMessages(id));
     if (socket && socket.connected) {
-      socket.emit("join chat", id);
+      socket?.emit("join chat", id);
     }
     if (chat.isGroupChat) {
       setHeading(chat.chatName);
@@ -158,19 +157,20 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    if (socket) {
-      const handler = (newMessageReceived: any) => {
-        if (selectedChat !== newMessageReceived.chat._id) {
-          return;
-        }
-        dispatch(addMessage(newMessageReceived));
-      };
-      socket.on("message received", handler);
-      return () => {
-        socket.off("message received", handler);
-      };
-    }
-  }, [socket, dispatch]);
+    if (!socket) return;
+
+    const handler = (newMessageReceived: any) => {
+      if (selectedChat !== newMessageReceived.chat._id) return;
+
+      dispatch(addMessage(newMessageReceived));
+    };
+
+    socket.on("message received", handler);
+
+    return () => {
+      socket.off("message received", handler);
+    };
+  }, [socket, selectedChat, dispatch]);
 
   const typeHandeler = (e: any) => {
     setNewMessage(e.target.value);
@@ -210,13 +210,9 @@ function Chat() {
         fixed top-0 left-0 w-full h-full z-20 md:static md:z-auto p-5 box-border`}
         >
           <div className="h-[10%] w-full flex items-center justify-between  box-border mb-2">
-            
             <h1 className="text-white text-2xl">MyChat</h1>
 
-        
             <DropdownMenuBasic />
-
-      
           </div>
           <SearchComponent selectChat={selectChat} />
         </div>
