@@ -10,9 +10,9 @@ interface GroupContactsProps {
 }
 
 function GroupContacts({ setSelectedChatId,selectedChatId }: GroupContactsProps) {
-  const allChat = useSelector((state: any) => state.userChat.allChat);
+  const allChat = useSelector((state: any) => state.chat.allChat);
   const currentUserId = useSelector(
-    (state: any) => state.userChat.currentUser?._id
+    (state: any) => state.user.currentUser?._id
   );
   const [selectedChat, setSelectedChat] = useState<string[]>([]);
 
@@ -39,18 +39,18 @@ function GroupContacts({ setSelectedChatId,selectedChatId }: GroupContactsProps)
   };
 
   return (
-    <div>
+    <>
       {allChat && allChat.length > 0
         ? allChat.map((chat: any) => {
             return (
               !chat.isGroupChat && (
                 <div
                   key={`chat-${chat._id}`}
-                  className={`contacts  w-full h-[10%] p-4 hover:bg-gray-600  flex items-center mb-1 ${
+                  className={`contacts cursor-pointer w-full h-[40%] rounded-md p-4 hover:bg-[#2A2A2A]  flex  items-center mb-1 ${
                     selectedChat.length > 0 &&
                     selectedChat.some((c: any) => c === chat._id)
                       ? "border-2 border-green-600 "
-                      : "border-2 md:border-gray-700 border-gray-800 md:bg-gray-700"
+                      : " border-2 border-transparent "
                   }`}
                   onClick={() => selectChat(chat)}
                 >
@@ -91,7 +91,7 @@ function GroupContacts({ setSelectedChatId,selectedChatId }: GroupContactsProps)
             );
           })
         : ""}
-    </div>
+    </>
   );
 }
 

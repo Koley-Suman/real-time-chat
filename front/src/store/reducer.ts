@@ -49,8 +49,8 @@ interface UserState {
     timestamp: string;
   }[];
   searchUser: [];
-  loading:boolean;
-  imgLoad:boolean;
+  loading: boolean;
+  imgLoad: boolean;
 }
 
 const signIn = createAsyncThunk(
@@ -73,17 +73,13 @@ const signUp = createAsyncThunk(
     name: string;
     email: string;
     password: string;
-    pic: any;
+    
   }) => {
     try {
-      const formData = new FormData();
-      formData.append("name", userData.name);
-      formData.append("email", userData.email);
-      formData.append("password", userData.password);
-      formData.append("profilePic", userData.pic);
       const response = await fetch("/api/user/", {
         method: "POST",
-        body: formData,
+         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
       });
 
       if (!response.ok) {
@@ -94,6 +90,44 @@ const signUp = createAsyncThunk(
       return response.json();
     } catch (error: any) {
       console.error(error.message);
+    }
+  }
+);
+const uploadPic = createAsyncThunk(
+  "user/uploadPic",
+  async (
+    userData: {
+     pic: File;
+      bio: string;
+    },
+    { getState, rejectWithValue }
+  ) => {
+    const state = getState() as { userChat: UserState };
+    const token = state.userChat.currentUser?.token;
+    try {
+      const formData = new FormData();
+      formData.append("profilePic", userData.pic);
+      formData.append("bio", userData.bio);
+      const response = await fetch("api/user/uploadPic", {
+        method:"POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        return rejectWithValue(errorData.message || "Failed to fetch chats");
+      }
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data); // ✅ this will log actual JSON
+        return data;
+        
+      }
+      
+    } catch (error) {
+      console.log(error);
     }
   }
 );
@@ -337,8 +371,8 @@ const initialState: UserState = {
   allChat: [],
   allMessages: [],
   searchUser: [],
-  loading:false,
-  imgLoad:false
+  loading: false,
+  imgLoad: false,
 };
 
 export const counterSlice = createSlice({
@@ -349,13 +383,13 @@ export const counterSlice = createSlice({
     addMessage(state, action) {
       state.allMessages.push(action.payload);
     },
-    signout(state){
-      state.currentUser=null;
-      state.allChat=[];
-      state.allMessages=[];
-      state.searchUser=[];
-      state.loading=false;
-    }
+    signout(state) {
+      state.currentUser = null;
+      state.allChat = [];
+      state.allMessages = [];
+      state.searchUser = [];
+      state.loading = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -364,41 +398,55 @@ export const counterSlice = createSlice({
           ...action.payload.user,
           token: action.payload.token,
         };
-        state.loading=false;
+        state.loading = false;
         localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
       })
-      .addCase(signIn.pending,(state,action)=>{
-        state.loading=true;
+      .addCase(signIn.pending, (state, action) => {
+        state.loading = true;
       })
       .addCase(signIn.rejected, (state, action) => {
         state.currentUser = null;
-        state.loading=false;
+        state.loading = false;
       })
       .addCase(signUp.fulfilled, (state, action) => {
         state.currentUser = {
           ...action.payload.user,
           token: action.payload.token,
         };
-        state.loading=false;
+        state.loading = false;
         localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
       })
-      .addCase(signUp.pending,(state,action)=>{
-        state.loading=true;
+      .addCase(signUp.pending, (state, action) => {
+        state.loading = true;
       })
       .addCase(signUp.rejected, (state, action) => {
         state.currentUser = null;
-        state.loading=false;
+        state.loading = false;
+      })
+      .addCase(uploadPic.fulfilled, (state, action) => {
+        state.currentUser = {
+          ...action.payload.user,
+          pic: action.payload.pic,
+          bio: action.payload.bio,
+        };
+        state.loading = false;
+      })
+      .addCase(uploadPic.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(uploadPic.rejected, (state) => {
+        state.loading = false;
       })
       .addCase(fetchAllChats.fulfilled, (state, action) => {
         state.allChat = action.payload;
-        state.loading=false;
+        state.loading = false;
       })
       .addCase(fetchAllChats.pending, (state, action) => {
-        state.loading=true;
+        state.loading = true;
       })
       .addCase(fetchAllChats.rejected, (state, action) => {
         state.allChat = [];
-        state.loading=false;
+        state.loading = false;
       })
       .addCase(createChat.fulfilled, (state, action) => {
         state.allChat.push(action.payload);
@@ -411,10 +459,10 @@ export const counterSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.allMessages.push(action.payload);
-        state.imgLoad=false;
+        state.imgLoad = false;
       })
       .addCase(sendMessage.pending, (state, action) => {
-        state.imgLoad=true;
+        state.imgLoad = true;
       })
       .addCase(contacts.fulfilled, (state, action) => {
         state.searchUser = action.payload;
@@ -448,10 +496,11 @@ export const counterSlice = createSlice({
 });
 
 // Export async thunks directly
-export const { addMessage,signout } = counterSlice.actions;
+export const { addMessage, signout } = counterSlice.actions;
 export {
   signIn,
   signUp,
+  uploadPic,
   fetchAllChats,
   createChat,
   allMessages,

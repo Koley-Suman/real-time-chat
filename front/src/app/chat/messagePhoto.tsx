@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ImageIcon, Loader2Icon, SendHorizonalIcon, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { sendMessage } from "@/store/reducer";
+import { sendMessage } from "@/store/message_reducer/messageThank";
 import { Socket } from "socket.io-client";
 
 interface ImageUploadPreviewProps {
@@ -19,7 +19,7 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
-const loading = useSelector((state: any) => state.userChat.imgLoad);
+const loading = useSelector((state: any) => state.user.imgLoad);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,7 +46,7 @@ const loading = useSelector((state: any) => state.userChat.imgLoad);
       if (sendMessage.fulfilled.match(result)) {
         const messageData = result.payload;
         if (socket) {
-          socket.emit("new Message", messageData); // ✅ emit after successful send
+          socket.emit("new Message", messageData); 
         }
         setSelectedImage(null);
         setImagePreviewUrl(null);

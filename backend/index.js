@@ -65,14 +65,15 @@ io.on("connection",(socket)=>{
         var chat = newMessage?.chat;
         if(!chat || !chat.users) return  console.log("chat or chat.users not defined", newMessage);
 
-        chat.users.forEach(user => {
-            if (user._id === newMessage.sender._id)return;
-            else{
-                socket.in(user._id).emit("message received",newMessage)
-            }
+        // chat.users.forEach(user => {
+        //     if (user._id === newMessage.sender._id)return;
+        //     else{
+        //         socket.in(user._id).emit("message received",newMessage)
+        //     }
                 
             
-        });
+        // });
+        socket.to(chat._id).emit("message received",newMessage);
     })
 
     socket.on("typing",(room)=>socket.in(room).emit("typing"));

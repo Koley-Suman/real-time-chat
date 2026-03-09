@@ -18,7 +18,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import { AppDispatch } from "@/store/store";
-import { addtoGroup, removeTogroup } from "@/store/reducer";
+import { addtoGroup, removeTogroup } from "@/store/chat_reducer/chatThank";
 
 interface UserDrawerProps {
   drawerOpen: boolean;
@@ -34,10 +34,10 @@ function UserDrawer({
   const [addMember, setAddMember] = useState(false);
   const [select, setSelect] = useState([]);
   const [drawerData, setDrawerData] = useState(drawerDatas);
-  const allchat = useSelector((state: any) => state.userChat.allChat);
+  const allchat = useSelector((state: any) => state.chat.allChat);
   const singleChat = allchat.filter((chat: any) => chat.isGroupChat == false);
   const currentUserId = useSelector(
-    (state: any) => state.userChat.currentUser?._id
+    (state: any) => state.user.currentUser?._id
   );
   const others = singleChat.map((item: any) =>
     item.users.find((user: any) => user._id != currentUserId)

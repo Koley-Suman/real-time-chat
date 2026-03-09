@@ -13,7 +13,8 @@ function Avatar({
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn(
-        "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+        // default to a larger size, but allow overrides via className
+        "relative flex size-12 shrink-0 overflow-hidden rounded-full",
         className
       )}
       {...props}
@@ -28,7 +29,8 @@ function AvatarImage({
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
+      // ensure the image is contained rather than cropped
+      className={cn("aspect-square size-full object-contain", className)}
       {...props}
     />
   )

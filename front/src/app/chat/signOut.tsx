@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { LogOut } from "lucide-react";
 import { AppDispatch } from "@/store/store";
-import { signout } from "@/store/reducer";
+import { signout } from "@/store/user_reducer/userSlice";
 import { useRouter } from "next/navigation";
 interface UserDrawerProps {
   signOutDrawer: boolean;
@@ -19,7 +19,7 @@ interface UserDrawerProps {
 
 function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const currentUser = useSelector((state: any) => state.userChat.currentUser);
+  const currentUser = useSelector((state: any) => state.user.currentUser);
   const router = useRouter();
   const handelSignOut = () => {
     localStorage.removeItem("currentUser");
@@ -54,7 +54,7 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
           </div>
           <div className="w-full h-10 flex items-center justify-center flex-col ">
             <DrawerTitle className="text-lg text-gray-900">
-              {currentUser?.name.toUpperCase()}
+              {currentUser?.name?.toUpperCase()}
             </DrawerTitle>
             <DrawerTitle className="text-md text-gray-900">
               {currentUser?.email}

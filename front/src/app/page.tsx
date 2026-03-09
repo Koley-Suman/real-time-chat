@@ -11,9 +11,21 @@ export default function Home() {
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
     if (currentUser!=null) {
+      console.log(currentUser);
+      
       router.push("/chat");
     }
   }, []);
+
+  // if (typeof window !== "undefined") {
+  // const originalError = console.error;
+  // console.error = (...args) => {
+    // if (typeof args[0] === "string" && args[0].includes("hydration")) {
+      // debugger; // Pause in DevTools exactly when mismatch occurs
+    // }
+    // originalError(...args);
+  // };
+// }
   return (
     <React.Fragment>
       <div className="min-h-screen h-screen flex flex-col bg-gray-800 text-gray-300">

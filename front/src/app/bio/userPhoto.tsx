@@ -3,7 +3,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { CameraIcon, UploadCloud } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -35,7 +34,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({setPic,resetkey}) => {
   return (
     <div className="flex flex-col items-center p-2 w-full">
       <div className="relative">
-        <div className=" w-30 h-30 rounded-full overflow-hidden border border-gray-300">
+        <div className=" w-40 h-40 rounded-full overflow-hidden border-none">
           {preview ? (
             <img
               src={preview}
@@ -43,7 +42,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({setPic,resetkey}) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-200 bg-gray-400">
+            <div className="w-full h-full flex items-center justify-center  text-gray-200" style={{backgroundColor:"#2A2A2A"}}>
               No Image
             </div>
           )}

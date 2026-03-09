@@ -1,0 +1,11 @@
+.bio{
+  
+    background-image: linear-gradient(180deg,#0F0F0F,#1C1C1C);
+}
+.bio_input{
+    width: 100%;
+    /* padding: 10px; */
+    background-color: #2A2A2A;
+    border-radius: 5px;
+    color: #B3B3B3;
+}
