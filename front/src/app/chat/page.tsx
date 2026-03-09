@@ -175,6 +175,7 @@ function Chat() {
   const typeHandeler = (e: any) => {
     setNewMessage(e.target.value);
     if (!soctetConnection) return;
+    if (!selectedChat) return;
 
     if (!typing) {
       setTyping(true);
