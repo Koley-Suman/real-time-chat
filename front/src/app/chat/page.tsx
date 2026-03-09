@@ -42,7 +42,6 @@ var selectedChatCompare;
 
 function Chat() {
   const dispatch = useDispatch<AppDispatch>();
-  const allChat = useSelector((state: any) => state.chat.allChat);
   const [heading, setHeading] = useState("");
   const [newMessage, setNewMessage] = useState<string>("");
   const [selectedChat, setSelectedChat] = useState<string>("");
@@ -68,9 +67,9 @@ function Chat() {
   const currentUserId = useSelector(
     (state: any) => state.user.currentUser?._id,
   );
-  const currentUser = useSelector((state: any) => state.user.currentUser?.pic);
+
   const allMssage = useSelector((state: any) => state.message.allMessages);
-  console.log(allMssage);
+
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -211,18 +210,13 @@ function Chat() {
         fixed top-0 left-0 w-full h-full z-20 md:static md:z-auto p-5 box-border`}
         >
           <div className="h-[10%] w-full flex items-center justify-between  box-border mb-2">
-            {/* current user picture */}
+            
             <h1 className="text-white text-2xl">MyChat</h1>
 
-            {/* <div> */}
-            {/* <MoreVertical
-              className="text-white cursor-pointer"
-              // onClick={() => setSignOutDrawer(true)}
-              onClick={() => setOpen(true)}
-            /> */}
+        
             <DropdownMenuBasic />
 
-            {/* </div> */}
+      
           </div>
           <SearchComponent selectChat={selectChat} />
         </div>
