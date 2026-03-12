@@ -4,6 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { sendMessage } from "@/store/message_reducer/messageThank";
 import { Socket } from "socket.io-client";
+import imageCompression from "browser-image-compression";
+import {
+  addMessage,
+  replaceTempMessage,
+  uploadFailed,
+} from "@/store/message_reducer/messageSlice";
 
 interface ImageUploadPreviewProps {
   chatId: string;
@@ -19,42 +25,84 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
-const loading = useSelector((state: any) => state.user.imgLoad);
+  const loading = useSelector((state: any) => state.user.imgLoad);
+  const currentUserId = useSelector(
+    (state: any) => state.user.currentUser?._id,
+  );
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
-      setImagePreviewUrl(URL.createObjectURL(file));
-      setShowImageModal(true);
+      try {
+        // compress only if image is larger than 1MB
+        let compressedFile = file;
+
+        if (file.size > 10 * 1024 * 1024) {
+          const options = {
+            maxSizeMB: 5, // compress down to ~5MB
+            maxWidthOrHeight: 1920, // prevent huge resolution
+            useWebWorker: true,
+          };
+
+          compressedFile = await imageCompression(file, options);
+        }
+
+        setSelectedImage(compressedFile);
+        setImagePreviewUrl(URL.createObjectURL(compressedFile));
+        setShowImageModal(true);
+      } catch (error) {
+        console.error("Image compression failed", error);
+      }
     }
   };
 
-  console.log("chat Id",chatId);
-  console.log("image file",selectedImage);
-  
+  // console.log("chat Id",chatId);
+  // console.log("image file",selectedImage);
 
   const sendImageMessage = async () => {
     if (!chatId || !selectedImage) return;
-    console.log("send image");
+    // console.log("send image");
+    const tempId = "temp-" + Date.now();
+
+    const tempMessage = {
+      _id: tempId,
+      sender: { _id: currentUserId },
+      chat: { _id: chatId },
+      image: URL.createObjectURL(selectedImage),
+      deliveredTo: [],
+      seenBy: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: "uploading",
+      file: selectedImage,
+    };
+
+    dispatch(addMessage(tempMessage));
+    setSelectedImage(null);
+    setImagePreviewUrl(null);
+    setShowImageModal(false);
 
     try {
       const result = await dispatch(
-        sendMessage({ chatId, image: selectedImage })
+        sendMessage({ chatId, image: selectedImage }),
       );
 
       if (sendMessage.fulfilled.match(result)) {
         const messageData = result.payload;
         if (socket) {
-          socket.emit("new Message", messageData); 
+          socket.emit("new Message", messageData);
+          dispatch(
+            replaceTempMessage({
+              tempId,
+              realMessage: messageData,
+            }),
+          );
         }
-        setSelectedImage(null);
-        setImagePreviewUrl(null);
-        setShowImageModal(false);
       }
       // Reset state
     } catch (err) {
       console.error("Failed to send image:", err);
+      dispatch(uploadFailed({ tempId }));
     }
   };
   return (
@@ -92,19 +140,18 @@ const loading = useSelector((state: any) => state.user.imgLoad);
               className="rounded w-full max-w-full max-h-60 object-contain mb-4"
             />
             <div className="flex justify-end gap-2">
-              {!loading?(<button
-                onClick={sendImageMessage}
-                className="px-4 py-1 bg-violet-800 text-white rounded hover:bg-violet-900 cursor-pointer"
-              >
-                <SendHorizonalIcon />
-              </button>):(
+              {!loading ? (
                 <button
-                className="px-4 py-1 bg-violet-800 text-white rounded hover:bg-violet-900 cursor-not-allowed"
-              >
-                <Loader2Icon className="animate-spin" />
-              </button>
+                  onClick={sendImageMessage}
+                  className="px-4 py-1 bg-violet-800 text-white rounded hover:bg-violet-900 cursor-pointer"
+                >
+                  <SendHorizonalIcon />
+                </button>
+              ) : (
+                <button className="px-4 py-1 bg-violet-800 text-white rounded hover:bg-violet-900 cursor-not-allowed">
+                  <Loader2Icon className="animate-spin" />
+                </button>
               )}
-              
             </div>
           </div>
         </div>

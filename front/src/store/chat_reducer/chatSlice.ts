@@ -17,7 +17,7 @@ interface chatType {
       email: string;
       pic: string | null;
     }[];
-    lastMessage: {
+    latestMessage: {
       sender: {
         _id: string;
         name: string;
@@ -27,6 +27,7 @@ interface chatType {
       content: string;
       timestamp: string;
     } | null;
+    unreadCount: number;
     _id: string;
     groupAdmin: {
       _id: string;
@@ -46,7 +47,41 @@ const initialState: chatType = {
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
-  reducers: {},
+  reducers: {
+    increaseUnread(state, action) {
+      const { chatId } = action.payload;
+      console.log("increaseUnread reducer", chatId);
+      const chat = state.allChat.find((c) => c._id === chatId);
+
+      if (chat) {
+        chat.unreadCount = (chat.unreadCount || 0) + 1;
+      }
+    },
+
+    clearUnread(state, action) {
+      const { chatId } = action.payload;
+
+      const chat = state.allChat.find((c) => c._id === chatId);
+
+      if (chat) {
+        chat.unreadCount = 0;
+      }
+    },
+    addLastMessage(state, action) {
+      const { chatId, message } = action.payload;
+      console.log("addLastMessage reducer", chatId, message);
+      const chatIndex = state.allChat.findIndex((c) => c._id === chatId);
+
+      if (chatIndex === -1) return;
+
+      const chat = state.allChat[chatIndex];
+
+      chat.latestMessage = message;
+
+      state.allChat.splice(chatIndex, 1);
+      state.allChat.unshift(chat);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllChats.fulfilled, (state, action) => {
@@ -70,7 +105,7 @@ export const chatSlice = createSlice({
         // Find the updated group in allChat and replace it
         const updatedGroup = action.payload;
         const idx = state.allChat.findIndex(
-          (chat) => chat._id === updatedGroup._id
+          (chat) => chat._id === updatedGroup._id,
         );
         if (idx !== -1) {
           state.allChat[idx] = updatedGroup;
@@ -79,7 +114,7 @@ export const chatSlice = createSlice({
       .addCase(removeTogroup.fulfilled, (state, action) => {
         const updatedGroup = action.payload;
         const idx = state.allChat.findIndex(
-          (chat) => chat._id === updatedGroup._id
+          (chat) => chat._id === updatedGroup._id,
         );
         if (idx !== -1) {
           state.allChat[idx] = updatedGroup;
@@ -87,5 +122,7 @@ export const chatSlice = createSlice({
       });
   },
 });
+export const { increaseUnread, clearUnread, addLastMessage } =
+  chatSlice.actions;
 
 export default chatSlice.reducer;

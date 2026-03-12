@@ -36,7 +36,13 @@ import MessageHeader from "./message/messageHeader";
 import MessageComponent from "./message/message";
 import MessageFooter from "./message/messageFooter";
 import { DropdownMenuBasic } from "./dropDownMenu";
-
+import { updateDelivered } from "@/store/message_reducer/messageSlice";
+import { updateSeen } from "@/store/message_reducer/messageSlice";
+import {
+  addLastMessage,
+  clearUnread,
+  increaseUnread,
+} from "@/store/chat_reducer/chatSlice";
 const ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_URL;
 var selectedChatCompare;
 
@@ -53,6 +59,7 @@ function Chat() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isGroup, setIsGroup] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
+  const token = useSelector((state: any) => state.user.currentUser?.token);
 
   const [profilePic, setProfilePic] = useState("");
 
@@ -62,7 +69,7 @@ function Chat() {
   const [signOutDrawer, setSignOutDrawer] = useState(false);
   const [open, setOpen] = useState(false);
 
-  console.log(newMessage);
+  // console.log(newMessage);
 
   const currentUserId = useSelector(
     (state: any) => state.user.currentUser?._id,
@@ -71,14 +78,14 @@ function Chat() {
   const allMssage = useSelector((state: any) => state.message.allMessages);
 
   useEffect(() => {
-    const fetchChats = async () => {
-      await dispatch(fetchAllChats());
-    };
-    fetchChats();
-  }, [dispatch, allMssage]);
+    dispatch(fetchAllChats());
+  }, []);
 
-  const selectChat = (id: any, chat: any) => {
+  // dispatch(fetchAllChats());
+
+  const selectChat = async (id: any, chat: any) => {
     setSelectedChat(id);
+    dispatch(clearUnread({ chatId: id }));
     dispatch(allMessages(id));
     if (socket && socket.connected) {
       socket?.emit("join chat", id);
@@ -93,6 +100,21 @@ function Chat() {
       setProfilePic(chat.users?.find((u: any) => u._id !== currentUserId).pic);
     }
     setShowMessages(true);
+
+    // await fetch("/api/message/seen", {
+    //   method: "PUT",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    //   body: JSON.stringify({
+    //     chatId: id,
+    //   }),
+    // });
+    socket?.emit("messages seen", {
+      chatId: id,
+      userId: currentUserId,
+    });
   };
 
   const senduserMessage = async (e: any) => {
@@ -122,6 +144,7 @@ function Chat() {
             content: newMessage,
           }),
         );
+        dispatch(addMessage(data.payload));
         socket?.emit("new Message", data.payload);
         socket?.emit("stop typing", selectedChat);
         setNewMessage("");
@@ -136,7 +159,7 @@ function Chat() {
       if (search.trim() !== "") {
         const user = dispatch(contacts({ text: search }));
 
-        console.log("Debounced search:", user);
+        // console.log("Debounced search:", user);
       }
     }, 300);
     return () => {
@@ -160,17 +183,74 @@ function Chat() {
     if (!socket) return;
 
     const handler = (newMessageReceived: any) => {
-      if (selectedChat !== newMessageReceived.chat._id) return;
+      socket.emit("message delivered", {
+        messageId: newMessageReceived._id,
+        chatId: newMessageReceived.chat._id,
+        userId: currentUserId,
+      });
+      dispatch(
+        addLastMessage({
+          chatId: newMessageReceived.chat._id,
+          message: newMessageReceived,
+        }),
+      );
 
-      dispatch(addMessage(newMessageReceived));
+      if (selectedChat === newMessageReceived.chat._id) {
+        socket.emit("messages seen", {
+          chatId: newMessageReceived.chat._id,
+          userId: currentUserId,
+        });
+        dispatch(addMessage(newMessageReceived));
+      } else {
+        dispatch(increaseUnread({ chatId: newMessageReceived.chat._id }));
+        // dispatch(addLastMessage({ chatId: newMessageReceived.chat._id, message: newMessageReceived?.content }));
+      }
+
+      // dispatch(addMessage(newMessageReceived));
+    };
+
+    const handleDelivered = ({ messageId, userId }: any) => {
+      console.log("delivered received", messageId);
+      dispatch(updateDelivered({ messageId, userId }));
+    };
+    const handleSeen = ({ chatId, userId }: any) => {
+      dispatch(updateSeen({ chatId, userId }));
     };
 
     socket.on("message received", handler);
+    socket.on("message delivered", handleDelivered);
+    socket.on("messages seen", handleSeen);
 
     return () => {
       socket.off("message received", handler);
+      socket.off("message delivered", handleDelivered);
+      socket.off("messages seen", handleSeen);
     };
   }, [socket, selectedChat, dispatch]);
+
+  // useEffect(() => {
+  //   console.log("listening for message delivered");
+  //   if (!socket) return;
+
+  //   const handleDelivered = ({ messageId, userId }: any) => {
+  //     console.log("delivered received", messageId);
+  //     dispatch(updateDelivered({ messageId, userId }));
+  //   };
+
+  //   socket.on("message delivered", handleDelivered);
+
+  //   return () => {
+  //     socket.off("message delivered", handleDelivered);
+  //   };
+  // }, [socket]);
+
+  // useEffect(() => {
+  //   if (!socket) return;
+
+  //   return () => {
+
+  //   };
+  // }, [socket, dispatch]);
 
   const typeHandeler = (e: any) => {
     setNewMessage(e.target.value);
@@ -198,8 +278,8 @@ function Chat() {
     }, timmer);
   };
 
-  console.log(ENDPOINT);
-  console.log(selectedChat, "selected chat");
+  // console.log(ENDPOINT);
+  // console.log(selectedChat, "selected chat");
 
   return (
     <div className="h-screen w-screen md:p-6 p-0 box-border noto-sans-chatFont input_background_color">
@@ -229,7 +309,11 @@ function Chat() {
             heading={heading}
           />
 
-          <MessageComponent selectedChat={selectedChat} isTyping={isTyping} />
+          <MessageComponent
+            selectedChat={selectedChat}
+            isTyping={isTyping}
+            isGroup={isGroup}
+          />
           <MessageFooter
             selectedChat={selectedChat}
             socket={socket}

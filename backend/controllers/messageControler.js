@@ -23,14 +23,14 @@ const sendMessage = asyncHandler(async (req, res) => {
             image = cloudResult.secure_url;
 
             fs.unlink(filePath, (err) => {
-            if (err) {
-            console.error("❌ Failed to delete temp file:", err);
-            } else {
-            console.log("✅ Temp file deleted:", filePath);
-            }
+                if (err) {
+                    console.error("❌ Failed to delete temp file:", err);
+                } else {
+                    console.log("✅ Temp file deleted:", filePath);
+                }
             });
-            
-       
+
+
             console.log("Uploaded to Cloudinary:", image);
         } catch (uploadErr) {
             console.error("Cloudinary upload failed:", uploadErr);
@@ -45,6 +45,8 @@ const sendMessage = asyncHandler(async (req, res) => {
         content: content || "",
         image: image || null,
         chat: chatId,
+        deliveredTo: [],
+        seenBy: []
     }
     try {
         var message = await Message.create(newMessage);
@@ -64,6 +66,25 @@ const sendMessage = asyncHandler(async (req, res) => {
         res.status(500).send(error.message || "Error Occured");
     }
 });
+
+export const markMessagesSeen = asyncHandler(async (req, res) => {
+    const { chatId } = req.body;
+    const userId = req.user._id;
+    await Message.updateMany(
+        {
+            chat: chatId,
+            seenBy: { $ne: userId }
+        },
+        {
+            $push: { seenBy: userId }
+        }
+    );
+
+    res.status(200).json({ message: "Messages marked as seen" });
+
+});
+
+
 
 const allMessages = asyncHandler(async (req, res) => {
     try {

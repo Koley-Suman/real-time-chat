@@ -55,10 +55,11 @@ function GroupContacts({ setSelectedChatId,selectedChatId }: GroupContactsProps)
                   onClick={() => selectChat(chat)}
                 >
                   <div className="w-[90%] flex h-full items-center bg-transparent">
-                    <Avatar>
+                    <Avatar className="size-10">
                       <AvatarImage
                         src={chat.users?.find((u: any) => u._id !== currentUserId).pic || "https://github.com/shadcn.png"}
                         alt={chat.users?.find((u: any) => u._id !== currentUserId).name}
+                        className="object-cover"
                       />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
@@ -85,6 +86,7 @@ function GroupContacts({ setSelectedChatId,selectedChatId }: GroupContactsProps)
                       }`}
                       color="green"
                     />
+                    
                   </div>
                 </div>
               )

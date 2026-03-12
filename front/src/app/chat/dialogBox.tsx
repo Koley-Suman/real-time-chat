@@ -31,10 +31,11 @@ export function DialogDemo({ open, setOpen }: Props) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    console.log("id", selectedChatId);
+    // console.log("id", selectedChatId);
   }, [selectedChatId]);
 
-  const createGroup = async () => {
+  const createGroup = async (e:any) => {
+    e.preventDefault();
     if (!groupName || selectedChatId.length < 2 || !pic) {
       setErrorMessage(
         "enter group name, group photo and select group member minimum two",

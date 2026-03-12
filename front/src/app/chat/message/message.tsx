@@ -2,18 +2,24 @@ import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import Lottie from "react-lottie";
 import animationData from "@/animation/typing.json";
+import { CheckCheck, CheckIcon, Loader2Icon } from "lucide-react";
 
 interface MessageHeaderProps {
   selectedChat: string;
   isTyping: boolean;
+  isGroup: boolean;
 }
 
-const MessageComponent = ({ selectedChat, isTyping }: MessageHeaderProps) => {
+const MessageComponent = ({
+  selectedChat,
+  isTyping,
+  isGroup,
+}: MessageHeaderProps) => {
   const allMssage = useSelector((state: any) => state.message.allMessages);
   const currentUserId = useSelector(
     (state: any) => state.user.currentUser?._id,
   );
-  const isGroup = useSelector((state: any) => state.chat.isGroup);
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const formateTime = (dateString: string) => {
@@ -49,6 +55,41 @@ const MessageComponent = ({ selectedChat, isTyping }: MessageHeaderProps) => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [allMssage, isTyping]);
+
+  const renderTicks = (message: any) => {
+    // console.log("message component",message);
+
+    if (message.sender._id !== currentUserId) return null;
+    if (message.status == "uploading") {
+      return <span className="text-gray-400 text-xs"> </span>;
+    }
+
+    // Seen (blue double tick)
+    if (message.seenBy.length > 0) {
+      return (
+        <span className="text-blue-500">
+          <CheckCheck />
+        </span>
+      );
+    }
+
+    // Delivered (gray double tick)
+    if (message.deliveredTo && message.deliveredTo.length > 0) {
+      console.log(message._id, message.deliveredTo);
+      return (
+        <span className="text-gray-300">
+          <CheckCheck />
+        </span>
+      );
+    }
+
+    // Sent (single tick)
+    return (
+      <span className="text-gray-300">
+        <CheckIcon />
+      </span>
+    );
+  };
   return (
     <div className="messagesectio flex h-[78%] w-full bg-slate-800">
       <div
@@ -107,16 +148,26 @@ const MessageComponent = ({ selectedChat, isTyping }: MessageHeaderProps) => {
                       )}
                       <div>
                         {message.image ? (
-                          <img
-                            src={message.image}
-                            alt="sent"
-                            className=" object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"
-                            onLoad={() => {
-                              messagesEndRef.current?.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                            }}
-                          />
+                          <div className="relative">
+                            <img
+                              src={message.image}
+                              alt="sent"
+                              className=" object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"
+                              onLoad={() => {
+                                messagesEndRef.current?.scrollIntoView({
+                                  behavior: "smooth",
+                                });
+                              }}
+                            />
+                            {message.status == "uploading" && (
+                              <div className="w-full h-full bg-black/50 backdrop-blur-md absolute top-0 left-0 flex items-center justify-center">
+                                <Loader2Icon
+                                  className="animate-spin text-white"
+                                  size={24}
+                                />
+                              </div>
+                            )}
+                          </div>
                         ) : (
                           <p className="break-words">{message.content}</p>
                         )}
@@ -125,11 +176,12 @@ const MessageComponent = ({ selectedChat, isTyping }: MessageHeaderProps) => {
                     <span
                       className={`text-[10px]  self-end mt-1 ml-3 ${
                         isSender ? "text-slate-300" : "text-slate-500"
-                      }`}
+                      } flex items-center justify-end gap-1`}
                     >
                       <p className="text-center">
                         {formateTime(message.createdAt)}
                       </p>
+                      <span>{renderTicks(message)}</span>
                     </span>
                   </div>
                 </div>

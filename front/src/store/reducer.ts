@@ -9,6 +9,29 @@ interface CurrentUser {
   pic: string | null;
   token?: string;
 }
+interface Message {
+  _id: string;
+
+  sender: {
+    _id: string;
+    name: string;
+    email: string;
+    pic: string | null;
+  };
+
+  content: string;
+
+  image?: string | null;
+
+  chat: {
+    _id: string;
+  };
+
+  seenBy: string[];
+  deliveredTo: string[];
+
+  createdAt: string;
+}
 interface UserState {
   currentUser: CurrentUser | null;
   allChat: {
@@ -38,16 +61,7 @@ interface UserState {
       pic: string | null;
     } | null;
   }[];
-  allMessages: {
-    sender: {
-      _id: string;
-      name: string;
-      email: string;
-      pic: string | null;
-    };
-    content: string;
-    timestamp: string;
-  }[];
+  allMessages: Message[];
   searchUser: [];
   loading: boolean;
   imgLoad: boolean;
@@ -64,21 +78,16 @@ const signIn = createAsyncThunk(
       body: JSON.stringify(userData),
     });
     return response.json();
-  }
+  },
 );
 
 const signUp = createAsyncThunk(
   "user/signUp",
-  async (userData: {
-    name: string;
-    email: string;
-    password: string;
-    
-  }) => {
+  async (userData: { name: string; email: string; password: string }) => {
     try {
       const response = await fetch("/api/user/", {
         method: "POST",
-         headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
       });
 
@@ -91,16 +100,16 @@ const signUp = createAsyncThunk(
     } catch (error: any) {
       console.error(error.message);
     }
-  }
+  },
 );
 const uploadPic = createAsyncThunk(
   "user/uploadPic",
   async (
     userData: {
-     pic: File;
+      pic: File;
       bio: string;
     },
-    { getState, rejectWithValue }
+    { getState, rejectWithValue },
   ) => {
     const state = getState() as { userChat: UserState };
     const token = state.userChat.currentUser?.token;
@@ -109,7 +118,7 @@ const uploadPic = createAsyncThunk(
       formData.append("profilePic", userData.pic);
       formData.append("bio", userData.bio);
       const response = await fetch("api/user/uploadPic", {
-        method:"POST",
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -123,13 +132,11 @@ const uploadPic = createAsyncThunk(
         const data = await response.json();
         console.log(data); // ✅ this will log actual JSON
         return data;
-        
       }
-      
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 );
 const fetchAllChats = createAsyncThunk(
   "user/fetchAllChats",
@@ -152,7 +159,7 @@ const fetchAllChats = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 
 const allMessages = createAsyncThunk(
@@ -175,7 +182,7 @@ const allMessages = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 const createChat = createAsyncThunk(
   "user/createChat",
@@ -199,7 +206,7 @@ const createChat = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 const sendMessage = createAsyncThunk(
   "user/sendMessage",
@@ -209,7 +216,7 @@ const sendMessage = createAsyncThunk(
       content,
       image,
     }: { chatId: string; content?: string; image?: any },
-    { getState, rejectWithValue }
+    { getState, rejectWithValue },
   ) => {
     const state = getState() as { userChat: UserState };
     const token = state.userChat.currentUser?.token;
@@ -237,7 +244,7 @@ const sendMessage = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 
 const contacts = createAsyncThunk(
@@ -256,20 +263,20 @@ const contacts = createAsyncThunk(
       if (!response.ok) {
         const errorData = await response.json();
         return rejectWithValue(
-          errorData.message || "Failed to search contacts"
+          errorData.message || "Failed to search contacts",
         );
       }
       return response.json();
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 const createNewGroup = createAsyncThunk(
   "user/createGroup",
   async (
     { name, users, groupPic }: { name: string; users: any[]; groupPic: any },
-    { getState, rejectWithValue }
+    { getState, rejectWithValue },
   ) => {
     const state = getState() as { userChat: UserState };
     const token = state.userChat.currentUser?.token;
@@ -278,7 +285,7 @@ const createNewGroup = createAsyncThunk(
       formData.append("name", name);
       formData.append(
         "users",
-        JSON.stringify(users.map((u) => (typeof u === "string" ? u : u._id)))
+        JSON.stringify(users.map((u) => (typeof u === "string" ? u : u._id))),
       );
       formData.append("groupPic", groupPic);
       const response = await fetch(`/api/chat/group`, {
@@ -296,14 +303,14 @@ const createNewGroup = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 
 const addtoGroup = createAsyncThunk(
   "chat/addtogroup",
   async (
     { chatId, users }: { chatId: string; users: any[] },
-    { getState, rejectWithValue }
+    { getState, rejectWithValue },
   ) => {
     const state = getState() as { userChat: UserState };
     const token = state.userChat.currentUser?.token;
@@ -322,21 +329,21 @@ const addtoGroup = createAsyncThunk(
       if (!response.ok) {
         const errorData = await response.json();
         return rejectWithValue(
-          errorData.message || "Failed to add user in group"
+          errorData.message || "Failed to add user in group",
         );
       }
       return response.json();
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 
 const removeTogroup = createAsyncThunk(
   "chat/removeToGroup",
   async (
     { chatId, userId }: { chatId: string; userId: string },
-    { getState, rejectWithValue }
+    { getState, rejectWithValue },
   ) => {
     const state = getState() as { userChat: UserState };
     const token = state.userChat.currentUser?.token;
@@ -352,14 +359,14 @@ const removeTogroup = createAsyncThunk(
       if (!response.ok) {
         const errorData = await response.json();
         return rejectWithValue(
-          errorData.message || "Failed to remove user in group"
+          errorData.message || "Failed to remove user in group",
         );
       }
       return response.json();
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 
 // Define the initial state using that type
@@ -390,6 +397,8 @@ export const counterSlice = createSlice({
       state.searchUser = [];
       state.loading = false;
     },
+    
+    
   },
   extraReducers: (builder) => {
     builder
@@ -477,7 +486,7 @@ export const counterSlice = createSlice({
         // Find the updated group in allChat and replace it
         const updatedGroup = action.payload;
         const idx = state.allChat.findIndex(
-          (chat) => chat._id === updatedGroup._id
+          (chat) => chat._id === updatedGroup._id,
         );
         if (idx !== -1) {
           state.allChat[idx] = updatedGroup;
@@ -486,7 +495,7 @@ export const counterSlice = createSlice({
       .addCase(removeTogroup.fulfilled, (state, action) => {
         const updatedGroup = action.payload;
         const idx = state.allChat.findIndex(
-          (chat) => chat._id === updatedGroup._id
+          (chat) => chat._id === updatedGroup._id,
         );
         if (idx !== -1) {
           state.allChat[idx] = updatedGroup;
@@ -496,7 +505,8 @@ export const counterSlice = createSlice({
 });
 
 // Export async thunks directly
-export const { addMessage, signout } = counterSlice.actions;
+export const { addMessage, signout} =
+  counterSlice.actions;
 export {
   signIn,
   signUp,

@@ -32,6 +32,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
     (state: any) => state.user.currentUser?._id,
   );
   const allChat = useSelector((state: any) => state.chat.allChat);
+  console.log("all chats in search component", allChat);
 
   useEffect(() => {
     const search_User = async () => {
@@ -44,8 +45,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
         const user = await dispatch(contacts({ text: search })).unwrap();
         setLoading(false);
 
-        console.log("Debounced search:", user);
-
+        // console.log("Debounced search:", user);
       } catch (error) {
         console.error("Search failed:", error);
         setLoading(false);
@@ -56,24 +56,6 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
 
     return () => clearTimeout(handler);
   }, [search, dispatch]);
-
-  // const selectChat = (id: any, chat: any) => {
-  //   setSelectedChat(id);
-  //   dispatch(allMessages(id));
-  //   if (socket && socket.connected) {
-  //     socket.emit("join chat", id);
-  //   }
-  //   if (chat.isGroupChat) {
-  //     setHeading(chat.chatName);
-  //     setIsGroup(true);
-  //     setProfilePic(chat.groupPic);
-  //   } else {
-  //     setHeading(chat.users?.find((u: any) => u._id !== currentUserId).name);
-  //     setIsGroup(false);
-  //     setProfilePic(chat.users?.find((u: any) => u._id !== currentUserId).pic);
-  //   }
-  //   setShowMessages(true);
-  // };
 
   const handleSelectSearchUser = async (user: any) => {
     setSelectedSearchUser(user);
@@ -91,12 +73,10 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
       if (createChat.fulfilled.match(result)) {
         selectChat(result.payload._id, result.payload);
       }
-    } 
+    }
 
     // You can also start a chat or show user details here
   };
-
-  
 
   return (
     <>
@@ -156,37 +136,57 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
                       ? chat.groupPic
                       : chat.users?.find((u: any) => u._id !== currentUserId)
                           .pic || "https://github.com/shadcn.png"
-                  } 
+                  }
                   className="object-cover"
                 />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <div>
-                <span className="ml-5 text-base">
+              <div className="min-w-0">
+                <div>
+                  <p className="truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-lg text-gray-300">
+                    {chat.isGroupChat == true
+                      ? chat.chatName
+                      : chat.users?.find((u: any) => u._id !== currentUserId)
+                          .name}
+                  </p>
                   {chat.isGroupChat == true
-                    ? chat.chatName
-                    : chat.users?.find((u: any) => u._id !== currentUserId)
-                        .name}
-                </span>
-                {chat.isGroupChat == true
-                  ? chat.latestMessage && (
-                      <p className="truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 ">
-                        {chat?.latestMessage?.sender?._id === currentUserId
-                          ? "you"
-                          : chat?.latestMessage?.sender?.name}{" "}
-                        : {chat?.latestMessage?.content}
-                      </p>
-                    )
-                  : chat.latestMessage && (
-                      <p
-                        className={`truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 `}
-                      >
-                        {chat?.latestMessage?.sender?._id === currentUserId
-                          ? "you : "
-                          : ""}{" "}
-                        {chat?.latestMessage?.content}
-                      </p>
-                    )}
+                    ? chat.latestMessage && (
+                        <p className="truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 ">
+                          {chat?.latestMessage?.sender?._id === currentUserId
+                            ? "you"
+                            : chat?.latestMessage?.sender?.name}{" "}
+                          <p
+                            className={`$ {chat.unreadCount > 0 ? 'text-gray-300 font-bold' : 'font-normal'}`}
+                          >
+                            {chat?.latestMessage?.content}
+                          </p>
+                        </p>
+                      )
+                    : chat.latestMessage && (
+                        <span
+                          className={`truncate flex max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 `}
+                        >
+                          {chat?.latestMessage?.sender?._id === currentUserId
+                            ? "you : "
+                            : " "}
+                          {" "}
+                          <p
+                            className={`${
+                              chat.unreadCount > 0
+                                ? "text-gray-200 font-bold"
+                                : ""
+                            }`}
+                          >
+                            {" " + chat?.latestMessage?.content}
+                          </p>
+                        </span>
+                      )}
+                </div>
+                {chat.unreadCount > 0 && (
+                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                    {chat.unreadCount}
+                  </span>
+                )}
               </div>
             </div>
           ))

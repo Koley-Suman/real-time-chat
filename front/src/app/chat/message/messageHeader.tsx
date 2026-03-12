@@ -21,8 +21,8 @@ const MessageHeader = ({
   heading,
 }: MessageHeaderProps) => {
   const allChat = useSelector((state: any) => state.chat.allChat);
-  console.log(selectedChat);
-  console.log(profilePic);
+  // console.log(selectedChat);
+  // console.log(profilePic);
   
   return (
     <>
@@ -48,9 +48,10 @@ const MessageHeader = ({
           <div className="h-full w-full">
             {selectedChat ? (
               <div className="flex h-full w-full items-center">
-                <Avatar className="w-10 h-10">
+                <Avatar className="size-10">
                   <AvatarImage
                     src={profilePic || "https://github.com/shadcn.png"}
+                    className="object-cover"
                   />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>

@@ -202,10 +202,11 @@ function UserDrawer({
                             onClick={() => selectedChatId(user._id)}
                           >
                             <span className="h-full w-[80%] flex items-center">
-                              <Avatar>
+                              <Avatar className="size-10">
                                 <AvatarImage
                                   src={user.pic || "https://github.com/shadcn.png"}
                                   alt={user.name}
+                                  className="object-cover"
                                 />
                                 <AvatarFallback>CN</AvatarFallback>
                               </Avatar>
