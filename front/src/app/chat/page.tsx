@@ -360,7 +360,7 @@ function Chat() {
   // }, []);
 
   return (
-    <div className="w-dvw h-dvh noto-sans-chatFont input_background_color" >
+    <div className="w-full h-full noto-sans-chatFont input_background_color" >
       <div className=" w-full h-full flex drop-shadow-md background  box-border">
         <div
           className={`w-1/4 border-r h-full md:py-0  box-border md:block
