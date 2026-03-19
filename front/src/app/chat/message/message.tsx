@@ -30,6 +30,15 @@ const MessageComponent = ({
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [viewerImage, setViewerImage] = useState<string | null>(null);
 
+  const scrollToBottom = () => {
+  if (messagesEndRef.current) {
+    messagesEndRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }
+};
+
   const formateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], {
@@ -58,11 +67,26 @@ const MessageComponent = ({
     },
   };
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [allMssage, isTyping]);
+ useEffect(() => {
+  scrollToBottom();
+}, [allMssage, isTyping]);
+
+
+useEffect(() => {
+  const handleResize = () => {
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100); // wait for keyboard animation
+  };
+
+  window.visualViewport?.addEventListener("resize", handleResize);
+
+  return () => {
+    window.visualViewport?.removeEventListener("resize", handleResize);
+  };
+}, []);
+
+
 
   const renderTicks = (message: any) => {
     // console.log("message component",message);

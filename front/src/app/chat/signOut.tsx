@@ -49,40 +49,40 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
     });
   };
 
-const handleSave = async () => {
-  setSaveLoading(true);
-  try {
+  const handleSave = async () => {
+    setSaveLoading(true);
+    try {
 
-    const payload = {
-      name: formData.name,
-      bio: formData.bio,
-      pic: pic || formData.pic,
-    };
+      const payload = {
+        name: formData.name,
+        bio: formData.bio,
+        pic: pic || formData.pic,
+      };
 
-    await dispatch(updateProfile(payload)).unwrap();
-    setSaveLoading(false);
+      await dispatch(updateProfile(payload)).unwrap();
+      setSaveLoading(false);
 
-    setIsEditing(false);
-  } catch (error: any) {
-    console.error("Profile update failed:", error);
-  } finally {
-    setSaveLoading(false);
-  }
-};
+      setIsEditing(false);
+    } catch (error: any) {
+      console.error("Profile update failed:", error);
+    } finally {
+      setSaveLoading(false);
+    }
+  };
 
-useEffect(() => {
-  if (currentUser) {
-    setFormData({
-      name: currentUser.name || "",
-      bio: currentUser.bio || "",
-      pic: currentUser.pic || "",
-    });
-  }
-}, [currentUser]);
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        name: currentUser.name || "",
+        bio: currentUser.bio || "",
+        pic: currentUser.pic || "",
+      });
+    }
+  }, [currentUser]);
 
   return (
     <Drawer open={signOutDrawer} onOpenChange={setSignOutDrawer} direction="left">
-      <DrawerContent className="background text-gray-100 flex flex-col h-full">
+      <DrawerContent className="background !w-screen md:!w-[24rem] h-full ml-auto bg-gray-800 text-gray-100 border-none !max-w-none fixed left-0 top-0">
 
         {/* HEADER */}
         <DrawerHeader className="border-b border-gray-700">
@@ -99,7 +99,7 @@ useEffect(() => {
         </DrawerHeader>
 
         {/* PROFILE SECTION */}
-        <div className="flex flex-col items-center gap-4 mt-6 px-4">
+        <div className="flex flex-col items-center gap-4 mt-6 px-4 w-full">
 
           {/* PROFILE IMAGE */}
           {isEditing ? (
@@ -166,8 +166,8 @@ useEffect(() => {
         {isEditing && (
           <div className="flex gap-3 mt-6 px-6 cursor-pointer">
             <Button className="flex-1" onClick={handleSave}>
-              {saveLOading ? (<Loader2Icon className="animate-spin"/>) : "Save"}
-              
+              {saveLOading ? (<Loader2Icon className="animate-spin" />) : "Save"}
+
             </Button>
 
             <Button
@@ -182,17 +182,17 @@ useEffect(() => {
 
         {/* SIGN OUT SECTION */}
         <div className="mt-auto px-6 pb-6">
-          <DrawerClose asChild>
-            <Button
-              variant="destructive"
-              className="w-full flex items-center justify-center gap-2 cursor-pointer"
-              onClick={handelSignOut}
-            >
-              <LogOut size={18} />
-              Sign Out
-            </Button>
-          </DrawerClose>
-        </div>
+  <DrawerClose asChild>
+    <Button
+      variant="outline"
+      className="w-full flex items-center justify-center gap-2"
+      onClick={handelSignOut}
+    >
+      <LogOut size={18} />
+      Sign Out
+    </Button>
+  </DrawerClose>
+</div>
 
       </DrawerContent>
     </Drawer>

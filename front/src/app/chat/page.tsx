@@ -160,6 +160,8 @@ function Chat() {
     });
   };
 
+ const inputmessageRef = useRef<HTMLInputElement>(null);
+
   const senduserMessage = async (e: any) => {
     e.preventDefault();
     try {
@@ -173,6 +175,11 @@ function Chat() {
       socket?.emit("new Message", data.payload);
       socket?.emit("stop typing", selectedChat);
       setNewMessage("");
+
+      setTimeout(() => {
+      inputmessageRef.current?.focus();
+    }, 0);
+
     } catch (error) {
       console.error("not send message");
     }
@@ -353,7 +360,7 @@ function Chat() {
   // }, []);
 
   return (
-    <div className="w-full fixed top-0 left-0 flex flex-col noto-sans-chatFont input_background_color" style={{ height: "var(--app-height)" }}>
+    <div className="w-dvw h-dvh noto-sans-chatFont input_background_color" >
       <div className=" w-full h-full flex drop-shadow-md background  box-border">
         <div
           className={`w-1/4 border-r h-full md:py-0  box-border md:block
@@ -374,6 +381,7 @@ function Chat() {
     flex flex-col w-full h-full min-h-0
     md:w-[75%]
   `}
+  style={{ height: "var(--app-height)" }}
 >
           {/* Header */}
 
@@ -408,6 +416,7 @@ function Chat() {
             newMessage={newMessage}
             handleKeyDown={handleKeyDown}
             senduserMessage={senduserMessage}
+            inputmessageRef={inputmessageRef}
           />
           {/* </div> */}
         </div>
