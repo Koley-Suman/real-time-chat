@@ -80,7 +80,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
 
   return (
     <>
-      <div className="search mb-2 h-[6%] w-full px-4 input_background_color rounded-xl flex items-center justify-between ">
+      <div className="search mb-2  w-full p-1 px-3 input_background_color rounded-full flex items-center justify-between ">
         <SearchIcon style={{ color: "#5a5a5a" }} />
         <Input
           placeholder="search for chat"

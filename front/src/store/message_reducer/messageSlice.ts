@@ -22,7 +22,8 @@ interface messageType {
   deliveredTo: string[];
 
   seenBy: string[];
-  status: "uploading" | "failed" | "sent";
+  status?: "uploading" | "failed" | "sent";
+  progress?: number;
 
   createdAt: string;
   updatedAt: string;
@@ -96,6 +97,15 @@ const MessageSlice = createSlice({
         message.status = "failed";
       }
     },
+    updateUploadProgress(state, action) {
+      const { messageId, progress } = action.payload;
+
+      const message = state.allMessages.find((m) => m._id === messageId);
+
+      if (message) {
+        message.progress = progress;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -114,7 +124,13 @@ const MessageSlice = createSlice({
       });
   },
 });
-export const { addMessage, updateDelivered, updateSeen, replaceTempMessage, uploadFailed } =
-  MessageSlice.actions;
+export const {
+  addMessage,
+  updateDelivered,
+  updateSeen,
+  replaceTempMessage,
+  uploadFailed,
+  updateUploadProgress,
+} = MessageSlice.actions;
 
 export default MessageSlice.reducer;

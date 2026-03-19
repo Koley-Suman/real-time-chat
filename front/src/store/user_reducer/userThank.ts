@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { UserState } from "./userSlice";
+import axios from "axios";
 
 const signIn = createAsyncThunk(
   "user/signIn",
@@ -112,4 +113,47 @@ const contacts = createAsyncThunk(
   }
 );
 
-export {signIn,signUp,uploadPic,contacts}
+
+const updateProfile = createAsyncThunk(
+  "user/updateProfile",
+  async (
+    userData: { name: string; pic: File | null; bio: string },
+    { getState, rejectWithValue }
+  ) => {
+    const state = getState() as { user: UserState };
+    const token = state.user.currentUser?.token;
+
+    try {
+      const formData = new FormData();
+
+      formData.append("name", userData.name);
+      formData.append("bio", userData.bio);
+
+      if (userData.pic) {
+        formData.append("profilePic", userData.pic);
+      }
+
+      const response = await axios.patch(
+        "/api/user/update-profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Profile update response:", response.data);
+      return response.data;
+
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update profile"
+      );
+    }
+  }
+);
+
+export {signIn,signUp,uploadPic,contacts,updateProfile}

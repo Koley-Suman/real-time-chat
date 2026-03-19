@@ -28,7 +28,7 @@ export default function Home() {
 // }
   return (
     <React.Fragment>
-      <div className="min-h-screen h-screen flex flex-col bg-gray-800 text-gray-300">
+      <div className="h-dvh flex flex-col bg-gray-800 text-gray-300">
         {/* Header */}
         <header className="bg-gray-900 shadow-md md:py-4 md:px-8 p-2  flex justify-between items-center">
           <h1 className="md:text-2xl font-bold text-violet-600 flex items-center gap-2 text-lg">

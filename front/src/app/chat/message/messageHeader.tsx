@@ -26,7 +26,7 @@ const MessageHeader = ({
   
   return (
     <>
-      <div className=" messageSection header h-[10%] w-full text-gray-100 flex justify-center items-center px-5">
+      <div className=" messageSection header h-16 shrink-0 w-full flex items-center px-5 z-20 background border-b text-gray-200">
         <button
           className="md:hidden mr-2"
           onClick={() => setShowMessages(false)}

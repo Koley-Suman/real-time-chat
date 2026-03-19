@@ -117,4 +117,73 @@ const uploadPic = asyncHandler(async (req, res) => {
   }
 })
 
-export { registerUser, authUser, allusers, uploadPic };
+ const updateUser = asyncHandler(async (req, res) => {
+  try {
+     const name = req.body?.name;
+    const bio = req.body?.bio;
+    console.log(name);
+    console.log(bio);
+    
+
+    let profilePicUrl;
+
+    // Upload new profile image if provided
+     if (req.file) {
+      try {
+        const cloudResult = await uploadCloudanary(req.file.path);
+        profilePicUrl = cloudResult.secure_url;
+
+        //  Delete local temp file
+        fs.unlinkSync(req.file.path);
+        console.log("Uploaded to Cloudinary:", profilePicUrl);
+      } catch (uploadErr) {
+        console.error("Cloudinary upload failed:", uploadErr);
+        return res.status(500).json({ message: "Image upload failed" });
+      }
+    } else {
+      console.warn(" No profile image uploaded");
+    }
+
+    // Build update object dynamically
+    const updateFields = {};
+
+    if (name) updateFields.name = name;
+    if (bio) updateFields.bio = bio;
+    if (profilePicUrl) updateFields.pic = profilePicUrl;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      updateFields,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      name: updatedUser.name,
+      bio: updatedUser.bio,
+      pic: updatedUser.pic,
+      email: updatedUser.email,
+      _id: updatedUser._id,
+    });
+
+  } catch (error) {
+    console.error("Profile update error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Profile update failed",
+    });
+  }
+});
+
+export { registerUser, authUser, allusers, uploadPic, updateUser };

@@ -1,12 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { contacts, signIn, signUp, uploadPic } from "./userThank";
+import {
+  contacts,
+  signIn,
+  signUp,
+  updateProfile,
+  uploadPic,
+} from "./userThank";
 
 // Define a type for the slice state
 interface CurrentUser {
   _id: string;
   name: string;
   email: string;
-  password:string;
+  password: string;
   pic: string | null;
   token?: string;
   bio: string;
@@ -23,7 +29,7 @@ const initialState: UserState = {
     typeof window !== "undefined" && localStorage.getItem("currentUser")
       ? JSON.parse(localStorage.getItem("currentUser")!)
       : null,
-  
+
   searchUser: [],
   loading: false,
   error: null,
@@ -33,7 +39,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    signout:() =>initialState,
+    signout: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -58,7 +64,7 @@ const userSlice = createSlice({
           token: action.payload.token,
         };
         state.loading = false;
-         localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+        localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
       })
       .addCase(signUp.pending, (state, action) => {
         state.loading = true;
@@ -86,8 +92,24 @@ const userSlice = createSlice({
       })
       .addCase(contacts.rejected, (state, action) => {
         state.searchUser = [];
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        console.log("Profile updated in slice:", action.payload);
+        if (state.currentUser) {
+          state.currentUser = {
+            ...state.currentUser,
+            name: action.payload.name,
+            bio: action.payload.bio,
+            pic: action.payload.pic,
+          };
+
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify(state.currentUser),
+          );
+        }
       });
   },
 });
-export const {signout} = userSlice.actions;
+export const { signout } = userSlice.actions;
 export default userSlice.reducer;

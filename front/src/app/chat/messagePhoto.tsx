@@ -8,6 +8,7 @@ import imageCompression from "browser-image-compression";
 import {
   addMessage,
   replaceTempMessage,
+  updateUploadProgress,
   uploadFailed,
 } from "@/store/message_reducer/messageSlice";
 
@@ -23,6 +24,8 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [retryFile, setRetryFile] = useState<File | null>(null);
+  // const [progress, setProgress] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
 
   const loading = useSelector((state: any) => state.user.imgLoad);
@@ -48,6 +51,7 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
         }
 
         setSelectedImage(compressedFile);
+        setRetryFile(compressedFile);
         setImagePreviewUrl(URL.createObjectURL(compressedFile));
         setShowImageModal(true);
       } catch (error) {
@@ -62,47 +66,64 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   const sendImageMessage = async () => {
     if (!chatId || !selectedImage) return;
     // console.log("send image");
+    const file = selectedImage;
     const tempId = "temp-" + Date.now();
 
     const tempMessage = {
       _id: tempId,
       sender: { _id: currentUserId },
       chat: { _id: chatId },
-      image: URL.createObjectURL(selectedImage),
+      image: URL.createObjectURL(file),
       deliveredTo: [],
       seenBy: [],
+      progress: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       status: "uploading",
-      file: selectedImage,
+      // file: selectedImage,
     };
 
     dispatch(addMessage(tempMessage));
+    
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
     setSelectedImage(null);
     setImagePreviewUrl(null);
     setShowImageModal(false);
 
     try {
       const result = await dispatch(
-        sendMessage({ chatId, image: selectedImage }),
+        sendMessage({
+          chatId,
+          image: file,
+          onProgress: (percent: number) => {
+            dispatch(
+              updateUploadProgress({
+                messageId: tempId,
+                progress: percent,
+              }),
+            );
+          },
+        }),
       );
 
       if (sendMessage.fulfilled.match(result)) {
         const messageData = result.payload;
         if (socket) {
           socket.emit("new Message", messageData);
-          dispatch(
-            replaceTempMessage({
-              tempId,
-              realMessage: messageData,
-            }),
-          );
         }
+        dispatch(
+          replaceTempMessage({
+            tempId,
+            realMessage: messageData,
+          }),
+        );
       }
       // Reset state
     } catch (err) {
       console.error("Failed to send image:", err);
-      dispatch(uploadFailed({ tempId }));
+      dispatch(uploadFailed({ messageId:tempId }));
     }
   };
   return (
@@ -126,6 +147,9 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
             <div
               className="w-full flex items-center justify-end cursor-pointer"
               onClick={() => {
+                if (imagePreviewUrl) {
+                  URL.revokeObjectURL(imagePreviewUrl);
+                }
                 setShowImageModal(false);
                 setSelectedImage(null);
                 setImagePreviewUrl(null);

@@ -77,6 +77,49 @@ function Chat() {
 
   const allMssage = useSelector((state: any) => state.message.allMessages);
 
+
+  useEffect(() => {
+  const updateHeight = () => {
+    const vh = window.visualViewport?.height;
+    if (vh) {
+      document.documentElement.style.setProperty(
+        "--app-height",
+        `${vh}px`
+      );
+    }
+  };
+
+  updateHeight();
+  window.visualViewport?.addEventListener("resize", updateHeight);
+
+  return () => {
+    window.visualViewport?.removeEventListener("resize", updateHeight);
+  };
+}, []);
+
+
+
+// // ////////////////////////////
+//   useEffect(() => {
+//   const updateHeight = () => {
+//     const vh = window.visualViewport?.height;
+//     if (vh) {
+//       document.documentElement.style.setProperty(
+//         "--app-height",
+//         `${vh}px`
+//       );
+//     }
+//   };
+
+//   updateHeight();
+//   window.visualViewport?.addEventListener("resize", updateHeight);
+
+//   return () => {
+//     window.visualViewport?.removeEventListener("resize", updateHeight);
+//   };
+// }, []);
+// ------------------------------------------------
+
   useEffect(() => {
     dispatch(fetchAllChats());
   }, []);
@@ -126,6 +169,7 @@ function Chat() {
           content: newMessage,
         }),
       );
+      dispatch(addMessage(data.payload));
       socket?.emit("new Message", data.payload);
       socket?.emit("stop typing", selectedChat);
       setNewMessage("");
@@ -281,16 +325,43 @@ function Chat() {
   // console.log(ENDPOINT);
   // console.log(selectedChat, "selected chat");
 
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const vh = window.visualViewport?.height;
+  //     const fullHeight = window.innerHeight;
+
+  //     if (vh) {
+  //       document.documentElement.style.setProperty("--vh", `${vh * 0.01}px`);
+
+  //       // 👇 IMPORTANT: calculate keyboard height
+  //       const keyboardHeight = fullHeight - vh;
+
+  //       document.documentElement.style.setProperty(
+  //         "--keyboard-height",
+  //         `${keyboardHeight}px`,
+  //       );
+  //     }
+  //   };
+
+  //   handleResize();
+
+  //   window.visualViewport?.addEventListener("resize", handleResize);
+
+  //   return () => {
+  //     window.visualViewport?.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
+
   return (
-    <div className="h-screen w-screen md:p-6 p-0 box-border noto-sans-chatFont input_background_color">
-      <div className="h-full w-full flex drop-shadow-md background  box-border">
+    <div className="w-full fixed top-0 left-0 flex flex-col noto-sans-chatFont input_background_color" style={{ height: "var(--app-height)" }}>
+      <div className=" w-full h-full flex drop-shadow-md background  box-border">
         <div
-          className={`w-1/4 border-r h-full md:py-0  box-border overflow-hidden md:block
+          className={`w-1/4 border-r h-full md:py-0  box-border md:block
         ${showMessages ? "hidden" : "block"} 
         md:w-1/4
         fixed top-0 left-0 w-full h-full z-20 md:static md:z-auto p-5 box-border`}
         >
-          <div className="h-[10%] w-full flex items-center justify-between  box-border mb-2">
+          <div className="sm:h-[4%] md:h[10%] w-full flex items-center justify-between  box-border mb-2">
             <h1 className="text-white text-2xl">MyChat</h1>
 
             <DropdownMenuBasic />
@@ -298,8 +369,15 @@ function Chat() {
           <SearchComponent selectChat={selectChat} />
         </div>
         <div
-          className={`${showMessages ? "block" : "hidden"} fixed top-0 flex flex-col items-center w-full h-full z-30 md:static md:w-[75%] md:h-full `}
-        >
+  className={`
+    ${showMessages ? "flex" : "hidden"}
+    flex flex-col w-full h-full min-h-0
+    md:w-[75%]
+  `}
+>
+          {/* Header */}
+
+
           <MessageHeader
             setShowMessages={setShowMessages}
             selectedChat={selectedChat}
@@ -308,12 +386,20 @@ function Chat() {
             profilePic={profilePic}
             heading={heading}
           />
+          
+
+          {/* Messages */}
 
           <MessageComponent
             selectedChat={selectedChat}
             isTyping={isTyping}
             isGroup={isGroup}
           />
+
+          {/* Footer */}
+          
+          {/* <div className="shrink-0 bg-slate-900 pb-[env(safe-area-inset-bottom)] mb-[var(--keyboard-height)]"> */}
+          {/* <div className="w-full h-[12%] shrink-0 bg-slate-900 pb-[env(safe-area-inset-bottom)]"> */}
           <MessageFooter
             selectedChat={selectedChat}
             socket={socket}
@@ -323,6 +409,7 @@ function Chat() {
             handleKeyDown={handleKeyDown}
             senduserMessage={senduserMessage}
           />
+          {/* </div> */}
         </div>
       </div>
 

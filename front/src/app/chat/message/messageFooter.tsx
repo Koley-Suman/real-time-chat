@@ -35,7 +35,7 @@ const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMe
 
 
   return (
-    <div className="w-full h-[12%] flex items-center justify-center">
+    <div className="w-full shrink-0 flex items-center justify-center pb-[env(safe-area-inset-bottom)]">
       <div className="createMessage flex  h-[70%] items-center w-[85%] rounded-4xl input_background_color text-gray-100 justify-between md:justify-evenly">
         {selectedChat ? (
           <React.Fragment>

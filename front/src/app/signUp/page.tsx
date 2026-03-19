@@ -59,7 +59,7 @@ export default function CardDemo() {
   };
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center background noto-sans-chatFont">
+    <div className="h-dvh w-dvw flex justify-center items-center background noto-sans-chatFont">
       <form
         className="w-full h-full sm:h-[90%] sm:max-h-[750px] sm:w-[600px] rounded-lg form_background"
         onSubmit={handleRegister}

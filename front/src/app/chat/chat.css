@@ -35,3 +35,10 @@
 .chat-background{
     background-color: #1a1a1a;
 }
+
+.messagesectio {
+  touch-action: pan-y;
+}
+.no-scroll-touch {
+  touch-action: none;
+}

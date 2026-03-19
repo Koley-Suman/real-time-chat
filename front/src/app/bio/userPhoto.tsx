@@ -1,61 +1,75 @@
-// components/PhotoUpload.tsx
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { CameraIcon, UploadCloud } from "lucide-react";
+import { CameraIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface PhotoUploadProps {
-  setPic: (pic: File|null) => void;
-  resetkey?: number; // define type for setPic
+  setPic: (pic: File | null) => void;
+  resetkey?: number;
+  defaultImage?: string; // optional image from props
 }
 
-const PhotoUpload: React.FC<PhotoUploadProps> = ({setPic,resetkey}) => {
+const PhotoUpload: React.FC<PhotoUploadProps> = ({
+  setPic,
+  resetkey,
+  defaultImage,
+}) => {
+
   const [preview, setPreview] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
+
     if (selected) {
-      setFile(selected);
-      setPreview(URL.createObjectURL(selected));
+      const previewUrl = URL.createObjectURL(selected);
+
+      setPreview(previewUrl);
       setPic(selected);
     }
   };
 
   useEffect(() => {
     setPreview(null);
-    setFile(null);
     setPic(null);
-  }, [resetkey]);
+  }, [resetkey, setPic]);
+
+  const displayImage = preview || defaultImage;
 
   return (
     <div className="flex flex-col items-center p-2 w-full">
+
       <div className="relative">
-        <div className=" w-40 h-40 rounded-full overflow-hidden border-none">
-          {preview ? (
+
+        <div className="w-40 h-40 rounded-full overflow-hidden border-none">
+
+          {displayImage ? (
             <img
-              src={preview}
+              src={displayImage}
               alt="Preview"
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center  text-gray-200" style={{backgroundColor:"#2A2A2A"}}>
+            <div
+              className="w-full h-full flex items-center justify-center text-gray-200"
+              style={{ backgroundColor: "#2A2A2A" }}
+            >
               No Image
             </div>
           )}
+
         </div>
 
-        {/* Camera Icon Overlay */}
+        {/* Camera Icon */}
         <button
-        type="button"
+          type="button"
           onClick={() => inputRef.current?.click()}
           className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow hover:bg-gray-100"
         >
           <CameraIcon className="w-5 h-5 text-gray-600 cursor-pointer" />
         </button>
+
       </div>
 
       <Input
@@ -65,6 +79,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({setPic,resetkey}) => {
         className="hidden"
         ref={inputRef}
       />
+
     </div>
   );
 };

@@ -5,6 +5,7 @@ import store from "@/store/store";
 import { Provider } from "react-redux";
 import { Store } from "lucide-react";
 import StoreProvider from "./storeProvider";
+import ViewportProvider from "./viewPortProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +33,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StoreProvider>
-          <div className="h-screen w-screen bg-gray-100">
-            {children}
-          </div>
+          <ViewportProvider>
+             <div
+      className="fixed inset-0 flex flex-col overflow-hidden bg-slate-900"
+      style={{ height: "var(--app-height)" }}
+    >
+              {children}
+            </div>
+          </ViewportProvider>
         </StoreProvider>
         {/* {children} */}
       </body>
