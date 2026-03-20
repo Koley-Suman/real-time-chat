@@ -33,15 +33,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StoreProvider>
-          {/* <ViewportProvider> */}
-          {/* <div */}
-          <div className="h-screen w-screen bg-gray-100">
-            {/* > */}
-            {children}
-          </div>
-          {/* </ViewportProvider> */}
+          <ViewportProvider>
+            <div
+              className="fixed inset-0 flex flex-col overflow-hidden bg-gray-100"
+              style={{ height: "var(--app-height)" }}
+            >
+              {children}
+            </div>
+          </ViewportProvider>
         </StoreProvider>
-        {/* {children} */}
       </body>
     </html>
   );

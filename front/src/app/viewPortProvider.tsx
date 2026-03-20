@@ -7,18 +7,21 @@ export default function ViewportProvider({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    const updateHeight = () => {
-      const vh = window.visualViewport?.height;
-      if (vh) {
-        document.documentElement.style.setProperty("--app-height", `${vh}px`);
-      }
+    const setHeight = () => {
+      // ✅ ALWAYS use innerHeight (stable)
+      document.documentElement.style.setProperty(
+        "--app-height",
+        `${window.innerHeight}px`
+      );
     };
 
-    updateHeight();
-    window.visualViewport?.addEventListener("resize", updateHeight);
+    setHeight();
+
+    // Only update on orientation change (not keyboard)
+    window.addEventListener("orientationchange", setHeight);
 
     return () => {
-      window.visualViewport?.removeEventListener("resize", updateHeight);
+      window.removeEventListener("orientationchange", setHeight);
     };
   }, []);
 

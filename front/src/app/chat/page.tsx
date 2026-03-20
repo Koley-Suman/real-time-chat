@@ -77,15 +77,14 @@ function Chat() {
 
   const allMssage = useSelector((state: any) => state.message.allMessages);
 
+const chatContainerRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
   const updateHeight = () => {
     const vh = window.visualViewport?.height;
-    if (vh) {
-      document.documentElement.style.setProperty(
-        "--app-height",
-        `${vh}px`
-      );
+    if (vh && chatContainerRef.current) {
+      chatContainerRef.current.style.height = `${vh}px`;
     }
   };
 
@@ -99,26 +98,26 @@ function Chat() {
 
 
 
-// // ////////////////////////////
-//   useEffect(() => {
-//   const updateHeight = () => {
-//     const vh = window.visualViewport?.height;
-//     if (vh) {
-//       document.documentElement.style.setProperty(
-//         "--app-height",
-//         `${vh}px`
-//       );
-//     }
-//   };
+  // // ////////////////////////////
+  //   useEffect(() => {
+  //   const updateHeight = () => {
+  //     const vh = window.visualViewport?.height;
+  //     if (vh) {
+  //       document.documentElement.style.setProperty(
+  //         "--app-height",
+  //         `${vh}px`
+  //       );
+  //     }
+  //   };
 
-//   updateHeight();
-//   window.visualViewport?.addEventListener("resize", updateHeight);
+  //   updateHeight();
+  //   window.visualViewport?.addEventListener("resize", updateHeight);
 
-//   return () => {
-//     window.visualViewport?.removeEventListener("resize", updateHeight);
-//   };
-// }, []);
-// ------------------------------------------------
+  //   return () => {
+  //     window.visualViewport?.removeEventListener("resize", updateHeight);
+  //   };
+  // }, []);
+  // ------------------------------------------------
 
   useEffect(() => {
     dispatch(fetchAllChats());
@@ -160,7 +159,7 @@ function Chat() {
     });
   };
 
- const inputmessageRef = useRef<HTMLInputElement>(null);
+  const inputmessageRef = useRef<HTMLInputElement>(null);
 
   const senduserMessage = async (e: any) => {
     e.preventDefault();
@@ -177,8 +176,8 @@ function Chat() {
       setNewMessage("");
 
       setTimeout(() => {
-      inputmessageRef.current?.focus();
-    }, 0);
+        inputmessageRef.current?.focus();
+      }, 0);
 
     } catch (error) {
       console.error("not send message");
@@ -359,11 +358,33 @@ function Chat() {
   //   };
   // }, []);
 
+//   useEffect(() => {
+//   const handleKeyboard = () => {
+//     const visual = window.visualViewport;
+//     if (!visual) return;
+
+//     const keyboardHeight = window.innerHeight - visual.height;
+
+//     document.documentElement.style.setProperty(
+//       "--keyboard-height",
+//       `${keyboardHeight > 0 ? keyboardHeight : 0}px`
+//     );
+//   };
+
+//   window.visualViewport?.addEventListener("resize", handleKeyboard);
+
+//   return () => {
+//     window.visualViewport?.removeEventListener("resize", handleKeyboard);
+//   };
+// }, []);
+
+
+
   return (
-    <div className="w-dvw h-dvh noto-sans-chatFont input_background_color" >
-      <div className=" w-full h-full flex drop-shadow-md background  box-border">
+    <div className="w-full h-full noto-sans-chatFont input_background_color" style={{ height: "var(--app-height)" }}>
+      <div className="w-full h-full flex drop-shadow-md background box-border">
         <div
-          className={`w-1/4 border-r h-full md:py-0  box-border md:block
+          className={`w-1/4 border-r min-h-full md:py-0 box-border md:block
         ${showMessages ? "hidden" : "block"} 
         md:w-1/4
         fixed top-0 left-0 w-full h-full z-20 md:static md:z-auto p-5 box-border`}
@@ -376,13 +397,14 @@ function Chat() {
           <SearchComponent selectChat={selectChat} />
         </div>
         <div
-  className={`
+        ref={chatContainerRef}
+          className={`
     ${showMessages ? "flex" : "hidden"}
-    flex flex-col w-full h-full min-h-0
+    flex flex-col w-full h-full min-h-0 overflow-hidden
     md:w-[75%]
   `}
-  style={{ height: "var(--app-height)" }}
->
+          // style={{ height: "var(--app-height)" }}
+        >
           {/* Header */}
 
 
@@ -394,7 +416,7 @@ function Chat() {
             profilePic={profilePic}
             heading={heading}
           />
-          
+
 
           {/* Messages */}
 
@@ -405,9 +427,6 @@ function Chat() {
           />
 
           {/* Footer */}
-          
-          {/* <div className="shrink-0 bg-slate-900 pb-[env(safe-area-inset-bottom)] mb-[var(--keyboard-height)]"> */}
-          {/* <div className="w-full h-[12%] shrink-0 bg-slate-900 pb-[env(safe-area-inset-bottom)]"> */}
           <MessageFooter
             selectedChat={selectedChat}
             socket={socket}
@@ -418,7 +437,6 @@ function Chat() {
             senduserMessage={senduserMessage}
             inputmessageRef={inputmessageRef}
           />
-          {/* </div> */}
         </div>
       </div>
 

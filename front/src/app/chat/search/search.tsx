@@ -90,7 +90,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
         />
       </div>
       <div
-        className=" w-full h-[85%] scrollbar-thin flex flex-col gap-2 overflow-y-auto border-gray-600 md:px-2 box-border 
+        className=" w-full scrollbar-thin flex flex-col gap-2 overflow-y-auto border-gray-600 md:px-2 box-border 
                  md:[&::-webkit-scrollbar]:w-2
                  md:[&::-webkit-scrollbar-track]:rounded-full
                 md:[&::-webkit-scrollbar-track]:bg-gray-800
@@ -99,6 +99,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
                 dark:[&::-webkit-scrollbar-track]:bg-gray-700
                 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500
                   "
+        style={{ height: "calc(var(--app-height) * 0.85)" }}
       >
         {loading ? (
           <SkeletonDemo />
@@ -106,7 +107,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
           searchUser.map((user: any) => (
             <div
               key={`search-${user._id}`}
-              className="p-3 box-border  rounded-sm contacts w-full h-[13%] hover:bg-[#1f1f1f] cursor-pointer transition-all duration-300 ease-in-out text-gray-100 flex items-center "
+              className="p-3 box-border  rounded-sm contacts w-full h-16 hover:bg-[#1f1f1f] cursor-pointer transition-all duration-300 ease-in-out text-gray-100 flex items-center "
               onClick={() => handleSelectSearchUser(user)}
             >
               <Avatar className="size-10">
@@ -126,7 +127,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
           allChat.map((chat: any) => (
             <div
               key={`chat-${chat._id}`}
-              className=" p-3 box-border rounded-sm contacts w-full h-[13%] hover:bg-[#1f1f1f] cursor-pointer transition-all duration-300 ease-in-out text-gray-100 flex items-center "
+              className=" p-3 box-border rounded-sm contacts w-full h-16 hover:bg-[#1f1f1f] cursor-pointer transition-all duration-300 ease-in-out text-gray-100 flex items-center "
               onClick={() => selectChat(chat._id, chat)}
             >
               <Avatar className="size-10">

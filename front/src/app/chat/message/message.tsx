@@ -123,22 +123,10 @@ useEffect(() => {
     );
   };
   return (
-  <div className="messagesectio flex-1 min-h-0 w-full bg-slate-800">
+  <div className="messagesectio flex-1 min-h-0 w-full bg-slate-800 overflow-hidden">
     
     <div
-      className=" h-full overflow-y-auto overscroll-contain
-        scroll-smooth 
-        p-2 md:p-6 
-        
-      
-      md:[&::-webkit-scrollbar]:w-2
-      md:[&::-webkit-scrollbar-track]:rounded-full
-      md:[&::-webkit-scrollbar-track]:bg-gray-800
-      md:[&::-webkit-scrollbar-thumb]:rounded-full
-      md:[&::-webkit-scrollbar-thumb]:bg-gray-900
-      dark:[&::-webkit-scrollbar-track]:bg-gray-700
-      dark:[&::-webkit-scrollbar-thumb]:bg-gray-700
-      "
+      className="h-full overflow-y-auto overscroll-contain scroll-smooth p-2 md:p-6 pb-[calc(56px + env(safe-area-inset-bottom) + var(--keyboard-height,0px))] md:[&::-webkit-scrollbar]:w-2 md:[&::-webkit-scrollbar-track]:rounded-full md:[&::-webkit-scrollbar-track]:bg-gray-800 md:[&::-webkit-scrollbar-thumb]:rounded-full md:[&::-webkit-scrollbar-thumb]:bg-gray-900 dark:[&::-webkit-scrollbar-track]:bg-gray-700 dark:[&::-webkit-scrollbar-thumb]:bg-gray-700"
     >
         {selectedChat && allMssage && allMssage.length > 0 ? (
           allMssage.map((message: any, i: number) => {
