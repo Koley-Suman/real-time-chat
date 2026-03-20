@@ -98,26 +98,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
 
 
 
-  // // ////////////////////////////
-  //   useEffect(() => {
-  //   const updateHeight = () => {
-  //     const vh = window.visualViewport?.height;
-  //     if (vh) {
-  //       document.documentElement.style.setProperty(
-  //         "--app-height",
-  //         `${vh}px`
-  //       );
-  //     }
-  //   };
-
-  //   updateHeight();
-  //   window.visualViewport?.addEventListener("resize", updateHeight);
-
-  //   return () => {
-  //     window.visualViewport?.removeEventListener("resize", updateHeight);
-  //   };
-  // }, []);
-  // ------------------------------------------------
+  
 
   useEffect(() => {
     dispatch(fetchAllChats());
@@ -277,7 +258,6 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
       socket.off("messages seen", handleSeen);
     };
   }, [socket, selectedChat, dispatch]);
-
   // useEffect(() => {
   //   console.log("listening for message delivered");
   //   if (!socket) return;
@@ -328,56 +308,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
     }, timmer);
   };
 
-  // console.log(ENDPOINT);
-  // console.log(selectedChat, "selected chat");
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     const vh = window.visualViewport?.height;
-  //     const fullHeight = window.innerHeight;
-
-  //     if (vh) {
-  //       document.documentElement.style.setProperty("--vh", `${vh * 0.01}px`);
-
-  //       // 👇 IMPORTANT: calculate keyboard height
-  //       const keyboardHeight = fullHeight - vh;
-
-  //       document.documentElement.style.setProperty(
-  //         "--keyboard-height",
-  //         `${keyboardHeight}px`,
-  //       );
-  //     }
-  //   };
-
-  //   handleResize();
-
-  //   window.visualViewport?.addEventListener("resize", handleResize);
-
-  //   return () => {
-  //     window.visualViewport?.removeEventListener("resize", handleResize);
-  //   };
-  // }, []);
-
-//   useEffect(() => {
-//   const handleKeyboard = () => {
-//     const visual = window.visualViewport;
-//     if (!visual) return;
-
-//     const keyboardHeight = window.innerHeight - visual.height;
-
-//     document.documentElement.style.setProperty(
-//       "--keyboard-height",
-//       `${keyboardHeight > 0 ? keyboardHeight : 0}px`
-//     );
-//   };
-
-//   window.visualViewport?.addEventListener("resize", handleKeyboard);
-
-//   return () => {
-//     window.visualViewport?.removeEventListener("resize", handleKeyboard);
-//   };
-// }, []);
-
+  
 
 
   return (

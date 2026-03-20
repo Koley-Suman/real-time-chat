@@ -157,7 +157,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
                             ? "you"
                             : chat?.latestMessage?.sender?.name}{" "}
                           <p
-                            className={`$ {chat.unreadCount > 0 ? 'text-gray-300 font-bold' : 'font-normal'}`}
+                            className={`${chat.unreadCount > 0 ? 'text-gray-300 font-bold' : 'font-normal'}`}
                           >
                             {chat?.latestMessage?.content}
                           </p>
