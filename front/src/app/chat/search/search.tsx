@@ -142,55 +142,57 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
                 />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <div className="min-w-0">
-                <div>
-                  <p className="truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-lg text-gray-300">
+              <div className="flex-1 flex justify-between items-center min-w-0 pr-2">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate overflow-hidden whitespace-nowrap ml-4 text-lg text-gray-300">
                     {chat.isGroupChat == true
                       ? chat.chatName
                       : chat.users?.find((u: any) => u._id !== currentUserId)
-                        .name}
+                          ?.name}
                   </p>
                   {chat.isGroupChat == true
                     ? chat.latestMessage && (
-                      <p className="truncate max-w-[120px] flex overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500">
-                        <span>
-                          {chat?.latestMessage?.sender?._id === currentUserId
-                            ? "You"
-                            : chat?.latestMessage?.sender?.name}
-                          :
-                        </span>
-
-                        <span
-                          className={`ml-1 ${chat.unreadCount > 0
-                              ? "text-gray-300 font-bold"
-                              : "font-normal"
+                        <p className="truncate flex overflow-hidden whitespace-nowrap ml-4 text-sm text-gray-500">
+                          <span className="shrink-0 mr-1">
+                            {chat?.latestMessage?.sender?._id === currentUserId
+                              ? "You"
+                              : chat?.latestMessage?.sender?.name}
+                            :
+                          </span>
+                          <span
+                            className={`truncate ${
+                              chat.unreadCount > 0
+                                ? "text-gray-300 font-bold"
+                                : "font-normal"
                             }`}
-                        >
-                          {chat?.latestMessage?.content}
-                        </span>
-                      </p>
-                    )
-                    : chat.latestMessage && (
-                      <span
-                        className={`truncate flex max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 `}
-                      >
-                        {chat?.latestMessage?.sender?._id === currentUserId
-                          ? "you : "
-                          : " "}
-                        {" "}
-                        <p
-                          className={`${chat.unreadCount > 0
-                            ? "text-gray-200 font-bold"
-                            : ""
-                            }`}
-                        >
-                          {" " + chat?.latestMessage?.content}
+                          >
+                            {chat?.latestMessage?.content}
+                          </span>
                         </p>
-                      </span>
-                    )}
+                      )
+                    : chat.latestMessage && (
+                        <div
+                          className="flex items-center ml-4 text-sm text-gray-500 min-w-0"
+                        >
+                          <span className="shrink-0">
+                            {chat?.latestMessage?.sender?._id === currentUserId
+                              ? "you : "
+                              : ""}
+                          </span>
+                          <span
+                            className={`truncate ml-1 ${
+                              chat.unreadCount > 0
+                                ? "text-gray-200 font-bold"
+                                : ""
+                            }`}
+                          >
+                            {chat?.latestMessage?.content}
+                          </span>
+                        </div>
+                      )}
                 </div>
                 {chat.unreadCount > 0 && (
-                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                  <span className="bg-emerald-500 text-white text-xs px-2.5 py-0.5 rounded-full font-bold shadow-lg ml-2 shrink-0">
                     {chat.unreadCount}
                   </span>
                 )}

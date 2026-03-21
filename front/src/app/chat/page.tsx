@@ -201,14 +201,23 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const newSocket = io(ENDPOINT);
     setSocket(newSocket);
-    newSocket.emit("setup", currentUserId);
     newSocket.on("connected", () => setSoctetConnection(true));
     newSocket.on("typing", () => setIsTyping(true));
     newSocket.on("stop typing", () => {
       setIsTyping(false);
       setTyping(false);
     });
+
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    if (socket && currentUserId) {
+      socket.emit("setup", currentUserId);
+    }
+  }, [socket, currentUserId]);
 
   useEffect(() => {
     if (!socket) return;
@@ -257,7 +266,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
       socket.off("message delivered", handleDelivered);
       socket.off("messages seen", handleSeen);
     };
-  }, [socket, selectedChat, dispatch]);
+  }, [socket, selectedChat, dispatch, currentUserId]);
   // useEffect(() => {
   //   console.log("listening for message delivered");
   //   if (!socket) return;

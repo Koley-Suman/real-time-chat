@@ -10,6 +10,7 @@ import { Server as SocketIOServer } from "socket.io";
 import http from "http";
 import cors from "cors";
 import Message from "./models/messagemodel.js";
+import Chat from "./models/chatmodel.js";
 
 dotenv.config({
     path: "./env",
@@ -51,9 +52,38 @@ const io = new SocketIOServer(server, {
 
 io.on("connection", (socket) => {
     console.log("connected to socket");
-    socket.on("setup", (userId) => {
+    socket.on("setup", async (userId) => {
+        if (!userId) return;
         socket.join(userId);
         socket.emit("connected");
+
+        try {
+            // Bulk mark messages as delivered upon connection
+            const chats = await Chat.find({ users: userId });
+            const chatIds = chats.map(c => c._id);
+
+            const messagesToUpdate = await Message.find({
+                chat: { $in: chatIds },
+                sender: { $ne: userId },
+                deliveredTo: { $ne: userId }
+            });
+
+            if (messagesToUpdate.length > 0) {
+                await Message.updateMany(
+                    { _id: { $in: messagesToUpdate.map(m => m._id) } },
+                    { $addToSet: { deliveredTo: userId } }
+                );
+
+                messagesToUpdate.forEach(msg => {
+                    io.to(msg.chat.toString()).emit("message delivered", {
+                        messageId: msg._id,
+                        userId: userId
+                    });
+                });
+            }
+        } catch (error) {
+            console.error("Error updating delivered status on setup:", error);
+        }
     });
 
     socket.on("join chat", (room) => {
