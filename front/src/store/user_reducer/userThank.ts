@@ -4,31 +4,35 @@ import axios from "axios";
 
 const signIn = createAsyncThunk(
   "user/signIn",
-  async (userData: { email: string; password: string }) => {
+  async (userData: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await fetch("/api/user/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
-    // console.log(response.json());
-    const data = await response.json();
-    console.log(data);
-    
-    return data;
-    } catch (error) {
-      console.log(error);
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        return rejectWithValue(errorData.message || "Invalid credentials");
+      }
+
+      const data = await response.json();
+      console.log(data);
       
+      return data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.message || "Network error");
     }
-    
   }
 );
 
 const signUp = createAsyncThunk(
   "user/signUp",
-  async (userData: { name: string; email: string; password: string }) => {
+  async (userData: { name: string; email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await fetch("/api/user/", {
         method: "POST",
@@ -39,7 +43,7 @@ const signUp = createAsyncThunk(
       if (!response.ok) {
         // Handle error status codes
         const errorData = await response.json();
-        return errorData.message || "Signup failed";
+        return rejectWithValue(errorData.message || "Signup failed");
       }
       const data = await response.json();
       console.log(data);
@@ -47,6 +51,7 @@ const signUp = createAsyncThunk(
       return data;
     } catch (error: any) {
       console.error(error.message);
+      return rejectWithValue(error.message || "Network error");
     }
   }
 );
