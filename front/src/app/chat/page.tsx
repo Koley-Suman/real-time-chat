@@ -8,7 +8,7 @@ import EmojiPicker from "emoji-picker-react";
 import { createChat, fetchAllChats } from "@/store/chat_reducer/chatThank";
 import { contacts } from "@/store/user_reducer/userThank";
 import { sendMessage, allMessages } from "@/store/message_reducer/messageThank";
-import { addMessage } from "@/store/message_reducer/messageSlice";
+import { addMessage, replaceTempMessage, uploadFailed } from "@/store/message_reducer/messageSlice";
 import { AppDispatch } from "@/store/store";
 import {
   ArrowLeft,
@@ -68,12 +68,15 @@ function Chat() {
   const [drawerData, setDrawerData] = useState<any>(null);
   const [signOutDrawer, setSignOutDrawer] = useState(false);
   const [open, setOpen] = useState(false);
-  const [messageLoading, setMessageLoading] = useState(false);
 
   // console.log(newMessage);
 
   const currentUserId = useSelector(
     (state: any) => state.user.currentUser?._id,
+  );
+  
+  const currentUser = useSelector(
+    (state: any) => state.user.currentUser,
   );
 
   const allMssage = useSelector((state: any) => state.message.allMessages);
@@ -145,46 +148,107 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const senduserMessage = async (e: any) => {
     e.preventDefault();
-    setMessageLoading(true);
+    if (!newMessage.trim()) return;
+
+    const messageContent = newMessage;
+    setNewMessage("");
+    socket?.emit("stop typing", selectedChat);
+
+    const tempId = `temp-${Date.now()}`;
+    const tempMessage = {
+      _id: tempId,
+      sender: {
+        _id: currentUserId,
+        name: currentUser?.name || "You",
+        email: currentUser?.email,
+        pic: currentUser?.pic || null,
+      },
+      content: messageContent,
+      chat: {
+        _id: selectedChat,
+      },
+      deliveredTo: [],
+      seenBy: [],
+      status: "uploading",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    dispatch(addMessage(tempMessage));
+
+    setTimeout(() => {
+      inputmessageRef.current?.focus();
+    }, 0);
+
     try {
       const data = await dispatch(
         sendMessage({
           chatId: selectedChat,
-          content: newMessage,
+          content: messageContent,
         }),
       );
-      dispatch(addMessage(data.payload));
-      socket?.emit("new Message", data.payload);
-      socket?.emit("stop typing", selectedChat);
-      setNewMessage("");
-      setMessageLoading(false);
-
-      setTimeout(() => {
-        inputmessageRef.current?.focus();
-      }, 0);
-
+      
+      const realMessage = data.payload;
+      if (realMessage && realMessage._id) {
+        dispatch(replaceTempMessage({ tempId, realMessage }));
+        socket?.emit("new Message", realMessage);
+      } else {
+        dispatch(uploadFailed({ messageId: tempId }));
+      }
     } catch (error) {
       console.error("not send message");
-      setMessageLoading(false);
+      dispatch(uploadFailed({ messageId: tempId }));
     }
   };
 
   const handleKeyDown = async (e: any) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault(); // prevent newline if textarea
+      if (!newMessage.trim()) return;
+
+      const messageContent = newMessage;
+      setNewMessage("");
+      socket?.emit("stop typing", selectedChat);
+
+      const tempId = `temp-${Date.now()}`;
+      const tempMessage = {
+        _id: tempId,
+        sender: {
+          _id: currentUserId,
+          name: currentUser?.name || "You",
+          email: currentUser?.email,
+          pic: currentUser?.pic || null,
+        },
+        content: messageContent,
+        chat: {
+          _id: selectedChat,
+        },
+        deliveredTo: [],
+        seenBy: [],
+        status: "uploading",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      dispatch(addMessage(tempMessage));
+
       try {
         const data = await dispatch(
           sendMessage({
             chatId: selectedChat,
-            content: newMessage,
+            content: messageContent,
           }),
         );
-        dispatch(addMessage(data.payload));
-        socket?.emit("new Message", data.payload);
-        socket?.emit("stop typing", selectedChat);
-        setNewMessage("");
+        const realMessage = data.payload;
+        if (realMessage && realMessage._id) {
+          dispatch(replaceTempMessage({ tempId, realMessage }));
+          socket?.emit("new Message", realMessage);
+        } else {
+          dispatch(uploadFailed({ messageId: tempId }));
+        }
       } catch (error) {
         console.error("not send message");
+        dispatch(uploadFailed({ messageId: tempId }));
       }
     }
   };
@@ -214,7 +278,19 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (socket && currentUserId) {
-      socket.emit("setup", currentUserId);
+      if (socket.connected) {
+        socket.emit("setup", currentUserId);
+      }
+
+      const onConnect = () => {
+        socket.emit("setup", currentUserId);
+      };
+
+      socket.on("connect", onConnect);
+
+      return () => {
+        socket.off("connect", onConnect);
+      };
     }
   }, [socket, currentUserId]);
 
@@ -391,7 +467,6 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
             handleKeyDown={handleKeyDown}
             senduserMessage={senduserMessage}
             inputmessageRef={inputmessageRef}
-            messageLoading={messageLoading}
           />
         </div>
       </div>

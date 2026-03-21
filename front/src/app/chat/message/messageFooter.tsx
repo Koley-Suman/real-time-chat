@@ -12,10 +12,9 @@ interface MessageHeaderProps {
   handleKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
   senduserMessage: (e: any) => void;
   inputmessageRef: any;
-  messageLoading: boolean;
 }
 
-const MessageFooter = ({ selectedChat, socket, setNewMessage, typeHandeler, newMessage, handleKeyDown, senduserMessage, inputmessageRef, messageLoading }: MessageHeaderProps) => {
+const MessageFooter = ({ selectedChat, socket, setNewMessage, typeHandeler, newMessage, handleKeyDown, senduserMessage, inputmessageRef }: MessageHeaderProps) => {
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const inputRef = useRef(null);
@@ -47,22 +46,22 @@ const MessageFooter = ({ selectedChat, socket, setNewMessage, typeHandeler, newM
 
   return (
     <div className="w-full h-16 flex items-center justify-center bg-transparent pb-[env(safe-area-inset-bottom)] touch-none pointer-events-auto" style={{ touchAction: 'none' }}>
-      <div className="createMessage flex h-[80%] items-center w-[85%] rounded-4xl input_background_color text-gray-100 justify-between md:justify-evenly">
+      <div className="createMessage flex h-[80%] items-center w-[95%] md:w-[85%] rounded-full input_background_color text-gray-100 px-3 md:px-5">
         {selectedChat ? (
           <React.Fragment>
-            <div className="w-[86%] flex justify-evenly items-center ">
-              <div className="md:w-[10%] w-[10%] flex items-center justify-evenly gap-2">
-                <SmileIcon
-                  className="cursor-pointer hover:text-yellow-400 hidden md:block"
-                  size={22}
-                  onClick={toggleEmojiPicker}
-                />
-                <ImageUploadPreview chatId={selectedChat} socket={socket} />
-              </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <SmileIcon
+                className="cursor-pointer hover:text-yellow-400 hidden md:block"
+                size={22}
+                onClick={toggleEmojiPicker}
+              />
+              <ImageUploadPreview chatId={selectedChat} socket={socket} />
+            </div>
 
+            <div className="flex-1 mx-2 min-w-0">
               <Input
                 placeholder="Type a message"
-                className="md:w-[80%] w-[80%] border-none text-gray-100 caret-violet-900 "
+                className="w-full border-none bg-transparent text-gray-100 caret-violet-900 focus-visible:ring-0 focus-visible:ring-offset-0 px-2"
                 onChange={typeHandeler}
                 value={newMessage}
                 ref={inputmessageRef}
@@ -76,24 +75,16 @@ const MessageFooter = ({ selectedChat, socket, setNewMessage, typeHandeler, newM
                 onKeyDown={handleKeyDown}
               />
             </div>
-            {
-              messageLoading ? (
-                <div className="w-[13%] md:w-[10%] flex justify-center items-center">
-                  <Loader2Icon className="animate-spin" size={22} />
-                </div>
-              ) : (
-                <div
-                  className="w-[13%] md:w-[10%] flex justify-center items-center cursor-pointer"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={senduserMessage}
-                >
-                  <SendHorizonalIcon
-                    className={`text-slate font-thin ${newMessage.length > 0 ? "block" : "hidden"
-                      }`}
-                  />
-                </div>
-              )
-            }
+            <div
+              className="flex justify-center items-center cursor-pointer shrink-0 w-8"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={senduserMessage}
+            >
+              <SendHorizonalIcon
+                className={`text-slate-200 ${newMessage.length > 0 ? "block" : "hidden"
+                  }`}
+              />
+            </div>
 
           </React.Fragment>
         ) : (

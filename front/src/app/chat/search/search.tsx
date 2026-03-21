@@ -203,7 +203,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
           <>
             <div className="w-full h-full flex items-center justify-center">
               <p className="text-gray-400 text-2xl font-bold">
-                Please Search The Chat User
+                Please Search The Chat User who Already Registered, and chat whith them
               </p>
             </div>
           </>

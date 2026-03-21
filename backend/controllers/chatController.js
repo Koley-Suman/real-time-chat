@@ -3,6 +3,7 @@ import Chat from '../models/chatmodel.js';
 import User from '../models/usermodel.js';
 import { uploadCloudanary } from '../fileUpload/cloudinary.js';
 import fs from "fs";
+import Message from '../models/messagemodel.js';
 const accessChat = asyncHandler(async (req, res) => {
     const { userId } = req.body;
     if (!userId) {
@@ -46,10 +47,22 @@ const fetchChats = asyncHandler(async (req, res) => {
             .populate("groupAdmin", "-password")
             .populate("latestMessage")
             .sort({ updatedAt: -1 })
+            .lean();
+
         chats = await User.populate(chats, {
             path: "latestMessage.sender",
             select: "name pic email",
         });
+
+        for (let i = 0; i < chats.length; i++) {
+            const unreadCount = await Message.countDocuments({
+                chat: chats[i]._id,
+                sender: { $ne: req.user._id },
+                seenBy: { $ne: req.user._id }
+            });
+            chats[i].unreadCount = unreadCount;
+        }
+
         res.status(200).json(chats);
     } catch (error) {
         console.error(error);

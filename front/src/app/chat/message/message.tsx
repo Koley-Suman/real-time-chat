@@ -93,7 +93,11 @@ const MessageComponent = ({
 
     if (message.sender._id !== currentUserId) return null;
     if (message.status == "uploading") {
-      return <span className="text-gray-400 text-xs"> </span>;
+      return <span className="text-gray-400 text-xs flex justify-center items-center"><Loader2Icon size={14} className="animate-spin ml-1"/></span>;
+    }
+
+    if (message.status == "failed") {
+      return <span className="text-red-500 text-xs ml-1 font-bold">Failed</span>;
     }
 
     // Seen (blue double tick)
