@@ -43,7 +43,7 @@ export default function CardDemo() {
       setError("");
       setEmail("");
       setPassword("");
-      router.push("/chat");
+      router.replace("/chat");
     } catch (error) {
       console.error("error occure");
     }
@@ -107,6 +107,7 @@ export default function CardDemo() {
             >
               {loading ? (
                 <Button
+                disabled
                   type="button"
                   className="w-full h-full bg-transparent hover:bg-transparent cursor-not-allowed"
                 >

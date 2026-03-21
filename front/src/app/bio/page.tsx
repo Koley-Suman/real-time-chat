@@ -21,7 +21,7 @@ const Bio = () => {
     if (pic) {
       try {
         await dispatch(uploadPic({ pic, bio })).unwrap();
-        router.push("chat");
+        router.replace("chat");
       } catch (error: any) {
         console.log(error.message);
         setErrorMessage(error.message);
@@ -53,6 +53,7 @@ const Bio = () => {
           />
           {loading ? (
             <Button
+            disabled
               className="w-full p-6 "
               style={{ backgroundColor: "#7C3AED" }}
               onClick={upload_pic_bio}

@@ -315,12 +315,12 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
     <div className="w-full h-full noto-sans-chatFont input_background_color" style={{ height: "var(--app-height)" }}>
       <div className="w-full h-full flex drop-shadow-md background box-border">
         <div
-          className={`w-1/4 border-r min-h-full md:py-0 box-border md:block
+          className={`w-1/4 border-r border-gray-800 min-h-full md:py-0 box-border md:block
         ${showMessages ? "hidden" : "block"} 
         md:w-1/4
         fixed top-0 left-0 w-full h-full z-20 md:static md:z-auto p-5 box-border`}
         >
-          <div className="sm:h-[4%] md:h[10%] w-full flex items-center justify-between  box-border mb-2">
+          <div className="sm:h-[4%] md:h-16 w-full flex items-center justify-between  box-border mb-2">
             <h1 className="text-white text-2xl">MyChat</h1>
 
             <DropdownMenuBasic />

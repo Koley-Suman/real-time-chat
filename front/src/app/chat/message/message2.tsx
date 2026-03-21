@@ -1,15 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import Lottie from "react-lottie";
 import animationData from "@/animation/typing.json";
-import {
-  ArrowUpFromLine,
-  CheckCheck,
-  CheckIcon,
-  Loader2Icon,
-} from "lucide-react";
-import ProgressCircle from "../component/progressber";
-import ImageViewer from "../component/imageViewer";
+import { CheckCheck, CheckIcon, Loader2Icon } from "lucide-react";
 
 interface MessageHeaderProps {
   selectedChat: string;
@@ -28,16 +21,6 @@ const MessageComponent = ({
   );
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const [viewerImage, setViewerImage] = useState<string | null>(null);
-
-  const scrollToBottom = () => {
-  if (messagesEndRef.current) {
-    messagesEndRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }
-};
 
   const formateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -67,31 +50,16 @@ const MessageComponent = ({
     },
   };
 
- useEffect(() => {
-  scrollToBottom();
-}, [allMssage, isTyping]);
-
-
-useEffect(() => {
-  const handleResize = () => {
-    setTimeout(() => {
-      scrollToBottom();
-    }, 100); // wait for keyboard animation
-  };
-
-  window.visualViewport?.addEventListener("resize", handleResize);
-
-  return () => {
-    window.visualViewport?.removeEventListener("resize", handleResize);
-  };
-}, []);
-
-
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [allMssage, isTyping]);
 
   const renderTicks = (message: any) => {
     // console.log("message component",message);
 
-    if (message?.sender?._id !== currentUserId) return null;
+    if (message.sender._id !== currentUserId) return null;
     if (message.status == "uploading") {
       return <span className="text-gray-400 text-xs"> </span>;
     }
@@ -123,11 +91,18 @@ useEffect(() => {
     );
   };
   return (
-  <div className="messagesectio flex-1 min-h-0 w-full bg-slate-800 overflow-hidden">
-    
-    <div
-      className="h-full overflow-y-auto overscroll-contain scroll-smooth p-2 md:p-6 pb-[calc(56px + env(safe-area-inset-bottom) + var(--keyboard-height,0px))] md:[&::-webkit-scrollbar]:w-2 md:[&::-webkit-scrollbar-track]:rounded-full md:[&::-webkit-scrollbar-track]:bg-gray-800 md:[&::-webkit-scrollbar-thumb]:rounded-full md:[&::-webkit-scrollbar-thumb]:bg-gray-900 dark:[&::-webkit-scrollbar-track]:bg-gray-700 dark:[&::-webkit-scrollbar-thumb]:bg-gray-700"
-    >
+    <div className="messagesectio flex h-[78%] w-full bg-slate-800">
+      <div
+        className=" h-full flex scrollbar-thin flex-col p-2 md:p-6 w-full overflow-auto
+                        md:[&::-webkit-scrollbar]:w-2
+                         md:[&::-webkit-scrollbar-track]:rounded-full
+                        md:[&::-webkit-scrollbar-track]:bg-gray-800
+                          md:[&::-webkit-scrollbar-thumb]:rounded-full
+                        md:[&::-webkit-scrollbar-thumb]:bg-gray-900
+                        dark:[&::-webkit-scrollbar-track]:bg-gray-700
+                        dark:[&::-webkit-scrollbar-thumb]:bg-gray-700
+                    "
+      >
         {selectedChat && allMssage && allMssage.length > 0 ? (
           allMssage.map((message: any, i: number) => {
             const isSender = message.sender._id === currentUserId;
@@ -152,9 +127,9 @@ useEffect(() => {
                   <div
                     className={`message ${
                       isSender
-                        ? "text-gray-100 bg-violet-900"
-                        : "text-slate-600 bg-gray-300"
-                    }  rounded-2xl font-medium md:p-2.5 p-2 h-fit w-fit max-w-[49%] flex  justify-between`}
+                        ? "text-white bg-violet-900"
+                        : "text-slate-800 bg-gray-300"
+                    }  rounded-2xl md:p-2.5 p-2 h-fit w-fit max-w-[49%] flex  justify-between`}
                   >
                     <span>
                       {isGroup && message.sender._id != currentUserId ? (
@@ -177,8 +152,7 @@ useEffect(() => {
                             <img
                               src={message.image}
                               alt="sent"
-                              onClick={() => setViewerImage(message.image)}
-                              className="cursor-pointer object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"
+                              className=" object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"
                               onLoad={() => {
                                 messagesEndRef.current?.scrollIntoView({
                                   behavior: "smooth",
@@ -187,14 +161,10 @@ useEffect(() => {
                             />
                             {message.status == "uploading" && (
                               <div className="w-full h-full bg-black/50 backdrop-blur-md absolute top-0 left-0 flex items-center justify-center">
-                                <ProgressCircle
-                                  progress={message.progress || 0}
+                                <Loader2Icon
+                                  className="animate-spin text-white"
+                                  size={24}
                                 />
-                              </div>
-                            )}
-                            {message.status == "failed" && (
-                              <div className="w-full h-full bg-black/50 backdrop-blur-md absolute top-0 left-0 flex items-center justify-center">
-                                <ArrowUpFromLine />
                               </div>
                             )}
                           </div>
@@ -235,12 +205,6 @@ useEffect(() => {
         )}
         <div ref={messagesEndRef} className="h-6 w-full"></div>
       </div>
-      {viewerImage && (
-        <ImageViewer
-          imageUrl={viewerImage}
-          onClose={() => setViewerImage(null)}
-        />
-      )}
     </div>
   );
 };

@@ -14,11 +14,20 @@ interface MessageHeaderProps {
   inputmessageRef:any;
 }
 
-const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMessage, handleKeyDown, senduserMessage, inputmessageRef }: MessageHeaderProps) => {
+const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMessage, handleKeyDown, senduserMessage,inputmessageRef }: MessageHeaderProps) => {
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-   const inputRef = useRef(null);
-    //  const inputmessageRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef(null);
+
+  const lockPageScroll = () => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  };
+
+  const unlockPageScroll = () => {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  };
 
   const toggleEmojiPicker = () => {
     setShowEmojiPicker((prev) => !prev);
@@ -36,8 +45,8 @@ const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMe
 
 
   return (
-    <div className="w-full h-14 flex items-center justify-center bg-slate-900 pb-[env(safe-area-inset-bottom)] touch-none pointer-events-auto" style={{ touchAction: 'none' }}>
-      <div className="createMessage flex  h-[70%] items-center w-[85%] rounded-4xl input_background_color text-gray-100 justify-between md:justify-evenly">
+    <div className="w-full h-16 flex items-center justify-center bg-transparent pb-[env(safe-area-inset-bottom)] touch-none pointer-events-auto" style={{ touchAction: 'none' }}>
+      <div className="createMessage flex h-[80%] items-center w-[85%] rounded-4xl input_background_color text-gray-100 justify-between md:justify-evenly">
         {selectedChat ? (
           <React.Fragment>
             <div className="w-[86%] flex justify-evenly items-center ">
@@ -56,12 +65,19 @@ const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMe
                 onChange={typeHandeler}
                 value={newMessage}
                 ref={inputmessageRef}
-                onFocus={() => setShowEmojiPicker(false)}
+                onFocus={() => {
+                  setShowEmojiPicker(false);
+                  lockPageScroll();
+                }}
+                onBlur={() => {
+                  unlockPageScroll();
+                }}
                 onKeyDown={handleKeyDown}
               />
             </div>
             <div
               className="w-[13%] md:w-[10%] flex justify-center items-center"
+                onMouseDown={(e) => e.preventDefault()}
               onClick={senduserMessage}
             >
               <SendHorizonalIcon

@@ -26,7 +26,7 @@ const MessageHeader = ({
   
   return (
     <>
-      <div className="messageSection header h-16 shrink-0 w-full flex items-center px-5 background border-b text-gray-200 touch-none pointer-events-auto" style={{ touchAction: 'none' }}>
+      <div className="messageSection header h-16 shrink-0 w-full flex items-center px-5 background border-b border-gray-800 text-gray-200 touch-none pointer-events-auto" style={{ touchAction: 'none' }}>
         <button
           className="md:hidden mr-2"
           onClick={() => setShowMessages(false)}

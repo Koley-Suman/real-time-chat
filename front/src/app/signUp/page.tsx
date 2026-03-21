@@ -46,7 +46,7 @@ export default function CardDemo() {
       );
       if (signUp.fulfilled.match(result)) {
         alert("Registration successful!");
-        router.push("bio");
+        router.replace("bio");
       }
       if (signUp.rejected.match(result)) {
         alert("somthing went wrong");
@@ -175,6 +175,7 @@ export default function CardDemo() {
             >
               {loading ? (
                 <Button
+                disabled
                   type="button"
                   className=" w-full h-full bg-transparent hover:bg-transparent cursor-not-allowed"
                 >

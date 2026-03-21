@@ -1,8 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Lottie from "react-lottie";
 import animationData from "@/animation/typing.json";
-import { CheckCheck, CheckIcon, Loader2Icon } from "lucide-react";
+import {
+  ArrowUpFromLine,
+  CheckCheck,
+  CheckIcon,
+  Loader2Icon,
+} from "lucide-react";
+import ProgressCircle from "../component/progressber";
+import ImageViewer from "../component/imageViewer";
 
 interface MessageHeaderProps {
   selectedChat: string;
@@ -21,6 +28,16 @@ const MessageComponent = ({
   );
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [viewerImage, setViewerImage] = useState<string | null>(null);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+  };
 
   const formateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -51,10 +68,25 @@ const MessageComponent = ({
   };
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToBottom();
   }, [allMssage, isTyping]);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100); // wait for keyboard animation
+    };
+
+    window.visualViewport?.addEventListener("resize", handleResize);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+
 
   const renderTicks = (message: any) => {
     // console.log("message component",message);
@@ -68,7 +100,7 @@ const MessageComponent = ({
     if (message.seenBy.length > 0) {
       return (
         <span className="text-blue-500">
-          <CheckCheck />
+          <CheckCheck size={20}/>
         </span>
       );
     }
@@ -78,7 +110,7 @@ const MessageComponent = ({
       console.log(message._id, message.deliveredTo);
       return (
         <span className="text-gray-300">
-          <CheckCheck />
+          <CheckCheck size={20}/>
         </span>
       );
     }
@@ -86,22 +118,15 @@ const MessageComponent = ({
     // Sent (single tick)
     return (
       <span className="text-gray-300">
-        <CheckIcon />
+        <CheckIcon size={20}/>
       </span>
     );
   };
   return (
-    <div className="messagesectio flex h-[78%] w-full bg-slate-800">
+    <div className="messagesectio flex-1 min-h-0 w-full chatBackground overflow-hidden">
+
       <div
-        className=" h-full flex scrollbar-thin flex-col p-2 md:p-6 w-full overflow-auto
-                        md:[&::-webkit-scrollbar]:w-2
-                         md:[&::-webkit-scrollbar-track]:rounded-full
-                        md:[&::-webkit-scrollbar-track]:bg-gray-800
-                          md:[&::-webkit-scrollbar-thumb]:rounded-full
-                        md:[&::-webkit-scrollbar-thumb]:bg-gray-900
-                        dark:[&::-webkit-scrollbar-track]:bg-gray-700
-                        dark:[&::-webkit-scrollbar-thumb]:bg-gray-700
-                    "
+        className="h-full overflow-y-auto overscroll-contain scroll-smooth p-2 md:p-6 pb-[calc(56px + env(safe-area-inset-bottom) + var(--keyboard-height,0px))] md:[&::-webkit-scrollbar]:w-2 md:[&::-webkit-scrollbar-track]:rounded-full md:[&::-webkit-scrollbar-track]:bg-gray-800 md:[&::-webkit-scrollbar-thumb]:rounded-full md:[&::-webkit-scrollbar-thumb]:bg-gray-900 dark:[&::-webkit-scrollbar-track]:bg-gray-700 dark:[&::-webkit-scrollbar-thumb]:bg-gray-700"
       >
         {selectedChat && allMssage && allMssage.length > 0 ? (
           allMssage.map((message: any, i: number) => {
@@ -120,25 +145,22 @@ const MessageComponent = ({
                 )}
                 <div
                   key={i}
-                  className={`h-fit w-full flex ${
-                    isSender ? "justify-end" : "justify-start"
-                  } items-center mb-2 max-h-[600px]`}
+                  className={`h-fit w-full flex ${isSender ? "justify-end" : "justify-start"
+                    } items-center mb-2 max-h-[600px]`}
                 >
                   <div
-                    className={`message ${
-                      isSender
-                        ? "text-white bg-violet-900"
-                        : "text-slate-800 bg-gray-300"
-                    }  rounded-2xl md:p-2.5 p-2 h-fit w-fit max-w-[49%] flex  justify-between`}
+                    className={`message ${isSender
+                        ? "text-gray-100 bg-violet-900 rounded-br-none"
+                        : "text-slate-600 bg-gray-300 rounded-bl-none"
+                      }  rounded-2xl  font-medium md:p-2.5 p-2 h-fit w-fit max-w-[49%] flex flex-col`}
                   >
                     <span>
                       {isGroup && message.sender._id != currentUserId ? (
                         <p
                           className="text-xs "
                           style={{
-                            color: `hsl(${
-                              (message.sender.name.charCodeAt(0) * 137) % 360
-                            }, 70%, 45%)`,
+                            color: `hsl(${(message.sender.name.charCodeAt(0) * 137) % 360
+                              }, 70%, 45%)`,
                           }}
                         >
                           {message.sender.name.toUpperCase()}
@@ -146,13 +168,14 @@ const MessageComponent = ({
                       ) : (
                         <></>
                       )}
-                      <div>
+                      <div className="min-w-0">
                         {message.image ? (
                           <div className="relative">
                             <img
                               src={message.image}
                               alt="sent"
-                              className=" object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"
+                              onClick={() => setViewerImage(message.image)}
+                              className="cursor-pointer object-cover max-w-[260px] max-h-[300px] w-full h-auto rounded-lg"
                               onLoad={() => {
                                 messagesEndRef.current?.scrollIntoView({
                                   behavior: "smooth",
@@ -161,22 +184,27 @@ const MessageComponent = ({
                             />
                             {message.status == "uploading" && (
                               <div className="w-full h-full bg-black/50 backdrop-blur-md absolute top-0 left-0 flex items-center justify-center">
-                                <Loader2Icon
-                                  className="animate-spin text-white"
-                                  size={24}
+                                <ProgressCircle
+                                  progress={message.progress || 0}
                                 />
+                              </div>
+                            )}
+                            {message.status == "failed" && (
+                              <div className="w-full h-full bg-black/50 backdrop-blur-md absolute top-0 left-0 flex items-center justify-center">
+                                <ArrowUpFromLine />
                               </div>
                             )}
                           </div>
                         ) : (
-                          <p className="break-words">{message.content}</p>
+                          <p className="break-words [overflow-wrap:anywhere] whitespace-pre-wrap">
+                            {message.content}
+                          </p>
                         )}
                       </div>
                     </span>
                     <span
-                      className={`text-[10px]  self-end mt-1 ml-3 ${
-                        isSender ? "text-slate-300" : "text-slate-500"
-                      } flex items-center justify-end gap-1`}
+                      className={`text-[10px]  self-end mt-1 ml-3 ${isSender ? "text-slate-300" : "text-slate-500"
+                        } flex items-center justify-end gap-1`}
                     >
                       <p className="text-center">
                         {formateTime(message.createdAt)}
@@ -205,6 +233,12 @@ const MessageComponent = ({
         )}
         <div ref={messagesEndRef} className="h-6 w-full"></div>
       </div>
+      {viewerImage && (
+        <ImageViewer
+          imageUrl={viewerImage}
+          onClose={() => setViewerImage(null)}
+        />
+      )}
     </div>
   );
 };

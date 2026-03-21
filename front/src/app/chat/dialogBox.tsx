@@ -104,7 +104,7 @@ export function DialogDemo({ open, setOpen }: Props) {
             <DialogClose asChild>
               <Button
                 variant="outline"
-                className="text-black cursor-pointer"
+                className="text-gray-200 cursor-pointer"
                 onClick={() => {
                   setGroupName("");
                   setSelectedChatId([]);
@@ -116,7 +116,7 @@ export function DialogDemo({ open, setOpen }: Props) {
               </Button>
             </DialogClose>
 
-            <Button type="submit" onClick={createGroup} className="cursor-pointer">
+            <Button type="submit" onClick={createGroup} className="cursor-pointer " style={{ backgroundColor: "#7C3AED" }}>
               Create
             </Button>
           </DialogFooter>

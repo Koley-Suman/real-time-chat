@@ -22,11 +22,11 @@ export function DropdownMenuBasic() {
     
     <DropdownMenu >
       <DropdownMenuTrigger asChild>
-        <MoreVerticalIcon className="text-white cursor-pointer"/>
+        <MoreVerticalIcon className="text-white! cursor-pointer hover:text-slate-300!"/>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-52">
+      <DropdownMenuContent className="w-52 bg-slate-950! text-slate-100! border border-slate-800 shadow-lg hover:bg-slate-900!">
         
-        <DropdownMenuItem className="py-2! px-3! cursor-pointer"
+        <DropdownMenuItem className="py-2! px-3! cursor-pointer bg-slate-950! text-slate-100! hover:bg-slate-900!"
         onClick={() => setOpenDialog(true)}
         >
           <span className="flex gap-2 items-center">
@@ -34,7 +34,7 @@ export function DropdownMenuBasic() {
             <p className="text-lg">Add New Group</p>
           </span>
           </DropdownMenuItem>
-        <DropdownMenuItem className="py-2! px-3! cursor-pointer"
+        <DropdownMenuItem className="py-2! px-3! cursor-pointer bg-slate-950! text-slate-100! hover:bg-slate-900!"
         onClick={() => setSignOutDrawer(true)}
         >
           <span className="flex gap-2 items-center">

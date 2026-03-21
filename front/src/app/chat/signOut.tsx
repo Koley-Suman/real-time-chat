@@ -165,7 +165,7 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
         {/* EDIT ACTION BUTTONS */}
         {isEditing && (
           <div className="flex gap-3 mt-6 px-6 cursor-pointer">
-            <Button className="flex-1" onClick={handleSave}>
+            <Button className="flex-1" onClick={handleSave} style={{ backgroundColor: "#7C3AED" }}>
               {saveLOading ? (<Loader2Icon className="animate-spin" />) : "Save"}
 
             </Button>

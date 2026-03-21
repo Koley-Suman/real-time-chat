@@ -90,7 +90,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
         />
       </div>
       <div
-        className=" w-full scrollbar-thin flex flex-col gap-2 overflow-y-auto border-gray-600 md:px-2 box-border 
+        className=" w-full scrollbar-thin flex flex-col gap-2 overflow-y-auto border-gray-800 md:px-2 box-border 
                  md:[&::-webkit-scrollbar]:w-2
                  md:[&::-webkit-scrollbar-track]:rounded-full
                 md:[&::-webkit-scrollbar-track]:bg-gray-800
