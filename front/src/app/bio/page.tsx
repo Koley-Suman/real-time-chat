@@ -13,21 +13,27 @@ const Bio = () => {
   const [pic, setPic] = useState<File | null>(null);
   const [bio, setBio] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const loading = useSelector((state: any) => state.user.loading);
+  // const loading = useSelector((state: any) => state.user.loading);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   const upload_pic_bio = async () => {
+    
     if (pic) {
+      setLoading(true);
       try {
         await dispatch(uploadPic({ pic, bio })).unwrap();
+        setLoading(false);
         router.replace("chat");
       } catch (error: any) {
         console.log(error.message);
         setErrorMessage(error.message);
+        setLoading(false);
       }
     } else {
       setErrorMessage("Please upload a photo before proceeding.");
+      setLoading(false);
     }
   };
 
@@ -56,7 +62,7 @@ const Bio = () => {
             disabled
               className="w-full p-6 "
               style={{ backgroundColor: "#7C3AED" }}
-              onClick={upload_pic_bio}
+              
             >
               <Loader2Icon className="animate-spin" />
             </Button>

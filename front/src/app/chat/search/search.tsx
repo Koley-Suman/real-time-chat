@@ -136,7 +136,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
                     chat.isGroupChat === true
                       ? chat.groupPic
                       : chat.users?.find((u: any) => u._id !== currentUserId)
-                          .pic || "https://github.com/shadcn.png"
+                        .pic || "https://github.com/shadcn.png"
                   }
                   className="object-cover"
                 />
@@ -148,40 +148,46 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
                     {chat.isGroupChat == true
                       ? chat.chatName
                       : chat.users?.find((u: any) => u._id !== currentUserId)
-                          .name}
+                        .name}
                   </p>
                   {chat.isGroupChat == true
                     ? chat.latestMessage && (
-                        <p className="truncate max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 ">
+                      <p className="truncate max-w-[120px] flex overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500">
+                        <span>
                           {chat?.latestMessage?.sender?._id === currentUserId
-                            ? "you"
-                            : chat?.latestMessage?.sender?.name}{" "}
-                          <p
-                            className={`${chat.unreadCount > 0 ? 'text-gray-300 font-bold' : 'font-normal'}`}
-                          >
-                            {chat?.latestMessage?.content}
-                          </p>
-                        </p>
-                      )
-                    : chat.latestMessage && (
-                        <span
-                          className={`truncate flex max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 `}
-                        >
-                          {chat?.latestMessage?.sender?._id === currentUserId
-                            ? "you : "
-                            : " "}
-                          {" "}
-                          <p
-                            className={`${
-                              chat.unreadCount > 0
-                                ? "text-gray-200 font-bold"
-                                : ""
-                            }`}
-                          >
-                            {" " + chat?.latestMessage?.content}
-                          </p>
+                            ? "You"
+                            : chat?.latestMessage?.sender?.name}
+                          :
                         </span>
-                      )}
+
+                        <span
+                          className={`ml-1 ${chat.unreadCount > 0
+                              ? "text-gray-300 font-bold"
+                              : "font-normal"
+                            }`}
+                        >
+                          {chat?.latestMessage?.content}
+                        </span>
+                      </p>
+                    )
+                    : chat.latestMessage && (
+                      <span
+                        className={`truncate flex max-w-[120px] overflow-hidden whitespace-nowrap ml-5 text-sm text-gray-500 `}
+                      >
+                        {chat?.latestMessage?.sender?._id === currentUserId
+                          ? "you : "
+                          : " "}
+                        {" "}
+                        <p
+                          className={`${chat.unreadCount > 0
+                            ? "text-gray-200 font-bold"
+                            : ""
+                            }`}
+                        >
+                          {" " + chat?.latestMessage?.content}
+                        </p>
+                      </span>
+                    )}
                 </div>
                 {chat.unreadCount > 0 && (
                   <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">

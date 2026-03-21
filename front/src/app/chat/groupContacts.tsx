@@ -46,7 +46,7 @@ function GroupContacts({ setSelectedChatId,selectedChatId }: GroupContactsProps)
               !chat.isGroupChat && (
                 <div
                   key={`chat-${chat._id}`}
-                  className={`contacts cursor-pointer w-full h-[40%] rounded-md p-4 hover:bg-[#2A2A2A]  flex  items-center mb-1 ${
+                  className={`contacts cursor-pointer w-full h-16 rounded-md p-4 hover:bg-[#2A2A2A]  flex  items-center mb-1 ${
                     selectedChat.length > 0 &&
                     selectedChat.some((c: any) => c === chat._id)
                       ? "border-2 border-green-600 "

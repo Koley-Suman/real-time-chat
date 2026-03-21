@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { Loader2Icon, PlusIcon, SearchIcon } from "lucide-react";
 import GroupContacts from "./groupContacts";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -29,17 +29,20 @@ export function DialogDemo({ open, setOpen }: Props) {
   const [resetPhotoKey, setResetPhotoKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // console.log("id", selectedChatId);
   }, [selectedChatId]);
 
   const createGroup = async (e:any) => {
+    setLoading(true);
     e.preventDefault();
     if (!groupName || selectedChatId.length < 2 || !pic) {
       setErrorMessage(
         "enter group name, group photo and select group member minimum two",
       );
+      setLoading(false);
       return;
     }
 
@@ -56,8 +59,11 @@ export function DialogDemo({ open, setOpen }: Props) {
       setGroupName("");
       setResetPhotoKey((prev) => prev + 1);
       setPic(null);
+      setLoading(false);
+      setOpen(false);
     } catch (error: any) {
       console.error("error message:", error.message);
+      setLoading(false);
     }
   };
   return (
@@ -104,21 +110,27 @@ export function DialogDemo({ open, setOpen }: Props) {
             <DialogClose asChild>
               <Button
                 variant="outline"
-                className="text-gray-200 cursor-pointer"
+                className="text-gray-200 cursor-pointer w-24"
                 onClick={() => {
                   setGroupName("");
                   setSelectedChatId([]);
                   setPic(null);
                   setResetPhotoKey((prev) => prev + 1);
+                  setErrorMessage("");
                 }}
               >
                 Cancel
               </Button>
             </DialogClose>
-
-            <Button type="submit" onClick={createGroup} className="cursor-pointer " style={{ backgroundColor: "#7C3AED" }}>
+                {loading ? (
+              <Button disabled className="cursor-not-allowed w-24" style={{ backgroundColor: "#7C3AED" }}>
+                Create
+                <Loader2Icon className="animate-spin"/>
+              </Button>
+            ) : ( 
+            <Button type="submit" onClick={createGroup} className="cursor-pointer w-24" style={{ backgroundColor: "#7C3AED" }}>
               Create
-            </Button>
+            </Button>)}
           </DialogFooter>
         </form>
       </DialogContent>

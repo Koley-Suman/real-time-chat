@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { Loader2Icon, LogOut, Pencil } from "lucide-react";
+import { Loader2Icon, LogOut, Pencil, X } from "lucide-react";
 import { AppDispatch } from "@/store/store";
 import { signout } from "@/store/user_reducer/userSlice";
 import { useRouter } from "next/navigation";
@@ -86,15 +86,14 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
 
         {/* HEADER */}
         <DrawerHeader className="border-b border-gray-700">
-          <DrawerTitle className="text-lg font-semibold">
+          <DrawerTitle className="text-lg font-semibold text-gray-200">
             Profile
           </DrawerTitle>
 
-          <DrawerClose
-            className="absolute right-4 top-4 text-2xl cursor-pointer"
-            asChild
-          >
-            &times;
+          <DrawerClose asChild>
+            <button className="absolute right-4 top-4 cursor-pointer">
+              <X size={24} />
+            </button>
           </DrawerClose>
         </DrawerHeader>
 
@@ -182,17 +181,17 @@ function SignOut({ signOutDrawer, setSignOutDrawer }: UserDrawerProps) {
 
         {/* SIGN OUT SECTION */}
         <div className="mt-auto px-6 pb-6">
-  <DrawerClose asChild>
-    <Button
-      variant="outline"
-      className="w-full flex items-center justify-center gap-2"
-      onClick={handelSignOut}
-    >
-      <LogOut size={18} />
-      Sign Out
-    </Button>
-  </DrawerClose>
-</div>
+          <DrawerClose asChild>
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+              onClick={handelSignOut}
+            >
+              <LogOut size={18} />
+              Sign Out
+            </Button>
+          </DrawerClose>
+        </div>
 
       </DrawerContent>
     </Drawer>

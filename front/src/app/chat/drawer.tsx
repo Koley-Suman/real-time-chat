@@ -166,7 +166,7 @@ function UserDrawer({
                               </span>
                               <span className="h-full w-[20%] flex items-center justify-center">
                                 <div
-                                  className="h-[80%] w-[80%] rounded hover:bg-gray-600 cursor-pointer flex items-center justify-center transition-all duration-200 ease-in"
+                                  className="h-[80%] w-[80%] rounded-full hover:bg-gray-600 cursor-pointer flex items-center justify-center transition-all duration-200 ease-in"
                                   style={{ borderRadius: "50%" }}
                                 >
                                   <TrashIcon
