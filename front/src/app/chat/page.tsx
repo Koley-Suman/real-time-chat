@@ -446,6 +446,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
             setDrawerData={setDrawerData}
             profilePic={profilePic}
             heading={heading}
+            setSelectedChat={setSelectedChat}
           />
 
 

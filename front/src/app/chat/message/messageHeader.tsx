@@ -10,6 +10,7 @@ interface MessageHeaderProps {
   setDrawerData: (data: any) => void;
   profilePic: string;
   heading: string;
+  setSelectedChat: (chatId: string) => void;
 }
 
 const MessageHeader = ({
@@ -19,6 +20,7 @@ const MessageHeader = ({
   setDrawerData,
   profilePic,
   heading,
+  setSelectedChat,
 }: MessageHeaderProps) => {
   const allChat = useSelector((state: any) => state.chat.allChat);
   // console.log(selectedChat);
@@ -29,7 +31,10 @@ const MessageHeader = ({
       <div className="messageSection header h-16 shrink-0 w-full flex items-center px-5 background border-b border-gray-800 text-gray-200 touch-none pointer-events-auto" style={{ touchAction: 'none' }}>
         <button
           className="md:hidden mr-2"
-          onClick={() => setShowMessages(false)}
+          onClick={() => {
+            setShowMessages(false);
+            setSelectedChat("");
+          }}
         >
           <ArrowLeft />
         </button>
