@@ -106,11 +106,11 @@ export function DialogDemo({ open, setOpen }: Props) {
           </div>
 
           {/* FOOTER */}
-          <DialogFooter className="p-4 border-t border-gray-600">
+          <DialogFooter className="p-4 border-t border-gray-600 w-full flex flex-row justify-center">
             <DialogClose asChild>
               <Button
                 variant="outline"
-                className="text-gray-200 cursor-pointer w-24"
+                className="text-gray-200 cursor-pointer w-28"
                 onClick={() => {
                   setGroupName("");
                   setSelectedChatId([]);
@@ -123,12 +123,12 @@ export function DialogDemo({ open, setOpen }: Props) {
               </Button>
             </DialogClose>
                 {loading ? (
-              <Button disabled className="cursor-not-allowed w-24" style={{ backgroundColor: "#7C3AED" }}>
+              <Button disabled className="cursor-not-allowed w-28" style={{ backgroundColor: "#7C3AED" }}>
                 Create
                 <Loader2Icon className="animate-spin"/>
               </Button>
             ) : ( 
-            <Button type="submit" onClick={createGroup} className="cursor-pointer w-24" style={{ backgroundColor: "#7C3AED" }}>
+            <Button type="submit" onClick={createGroup} className="cursor-pointer w-28" style={{ backgroundColor: "#7C3AED" }}>
               Create
             </Button>)}
           </DialogFooter>

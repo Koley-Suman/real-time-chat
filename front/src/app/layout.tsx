@@ -35,7 +35,7 @@ export default function RootLayout({
         <StoreProvider>
           <ViewportProvider>
             <div
-              className="fixed inset-0 flex flex-col overflow-hidden bg-gray-100"
+              className="fixed inset-0 flex flex-col overflow-hidden"
               style={{ height: "var(--app-height)" }}
             >
               {children}

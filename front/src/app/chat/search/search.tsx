@@ -32,6 +32,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
     (state: any) => state.user.currentUser?._id,
   );
   const allChat = useSelector((state: any) => state.chat.allChat);
+  const chatLoading = useSelector((state: any) => state.chat.loading);
   console.log("all chats in search component", allChat);
 
   useEffect(() => {
@@ -79,8 +80,8 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
   };
 
   return (
-    <>
-      <div className="search mb-2  w-full p-1 px-3 input_background_color rounded-full flex items-center justify-between ">
+    <div className="flex-1 flex flex-col min-h-0 w-full">
+      <div className="search mb-2 shrink-0 w-full p-1 px-3 input_background_color rounded-full flex items-center justify-between ">
         <SearchIcon style={{ color: "#5a5a5a" }} />
         <Input
           placeholder="search for chat"
@@ -90,7 +91,7 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
         />
       </div>
       <div
-        className=" w-full scrollbar-thin flex flex-col gap-2 overflow-y-auto border-gray-800 md:px-2 box-border 
+        className="flex-1 w-full scrollbar-thin flex flex-col gap-2 overflow-y-auto border-gray-800 md:px-2 box-border 
                  md:[&::-webkit-scrollbar]:w-2
                  md:[&::-webkit-scrollbar-track]:rounded-full
                 md:[&::-webkit-scrollbar-track]:bg-gray-800
@@ -99,10 +100,13 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
                 dark:[&::-webkit-scrollbar-track]:bg-gray-700
                 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500
                   "
-        style={{ height: "calc(var(--app-height) * 0.85)" }}
       >
-        {loading ? (
-          <SkeletonDemo />
+        {loading || chatLoading ? (
+          <div className="w-full flex flex-col gap-2">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <SkeletonDemo key={n} />
+            ))}
+          </div>
         ) : search.trim() && searchUser && searchUser.length > 0 ? (
           searchUser.map((user: any) => (
             <div
@@ -208,9 +212,9 @@ const SearchComponent = ({ selectChat }: SearchComponentProps) => {
             </div>
           </>
         )}
-        <div className="w-full h-[10%]"></div>
+        <div className="w-full h-4 shrink-0"></div>
       </div>
-    </>
+    </div>
   );
 };
 

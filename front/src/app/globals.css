@@ -128,6 +128,8 @@ html, body {
 }
 body {
   /* background-color: red; */
+  background-image: linear-gradient(180deg,#0F0F0F,#1C1C1C);
+
 }
 
 /* Custom scrollbar for .receiver */
@@ -146,3 +148,7 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #141313 rgb(27, 32, 39);
 }
+
+/* .background{
+    background-image: linear-gradient(180deg,#0F0F0F,#1C1C1C);
+} */

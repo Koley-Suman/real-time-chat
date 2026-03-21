@@ -74,35 +74,35 @@ function Chat() {
   const currentUserId = useSelector(
     (state: any) => state.user.currentUser?._id,
   );
-  
+
   const currentUser = useSelector(
     (state: any) => state.user.currentUser,
   );
 
   const allMssage = useSelector((state: any) => state.message.allMessages);
 
-const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
 
   useEffect(() => {
-  const updateHeight = () => {
-    const vh = window.visualViewport?.height;
-    if (vh && chatContainerRef.current) {
-      chatContainerRef.current.style.height = `${vh}px`;
-    }
-  };
+    const updateHeight = () => {
+      const vh = window.visualViewport?.height;
+      if (vh && chatContainerRef.current) {
+        chatContainerRef.current.style.height = `${vh}px`;
+      }
+    };
 
-  updateHeight();
-  window.visualViewport?.addEventListener("resize", updateHeight);
+    updateHeight();
+    window.visualViewport?.addEventListener("resize", updateHeight);
 
-  return () => {
-    window.visualViewport?.removeEventListener("resize", updateHeight);
-  };
-}, []);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updateHeight);
+    };
+  }, []);
 
 
 
-  
+
 
   useEffect(() => {
     dispatch(fetchAllChats());
@@ -175,6 +175,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
     };
 
     dispatch(addMessage(tempMessage));
+    dispatch(addLastMessage({ chatId: selectedChat, message: tempMessage }));
 
     setTimeout(() => {
       inputmessageRef.current?.focus();
@@ -187,10 +188,11 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
           content: messageContent,
         }),
       );
-      
+
       const realMessage = data.payload;
       if (realMessage && realMessage._id) {
         dispatch(replaceTempMessage({ tempId, realMessage }));
+        dispatch(addLastMessage({ chatId: selectedChat, message: realMessage }));
         socket?.emit("new Message", realMessage);
       } else {
         dispatch(uploadFailed({ messageId: tempId }));
@@ -231,6 +233,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
       };
 
       dispatch(addMessage(tempMessage));
+      dispatch(addLastMessage({ chatId: selectedChat, message: tempMessage }));
 
       try {
         const data = await dispatch(
@@ -242,6 +245,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
         const realMessage = data.payload;
         if (realMessage && realMessage._id) {
           dispatch(replaceTempMessage({ tempId, realMessage }));
+          dispatch(addLastMessage({ chatId: selectedChat, message: realMessage }));
           socket?.emit("new Message", realMessage);
         } else {
           dispatch(uploadFailed({ messageId: tempId }));
@@ -408,7 +412,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
     }, timmer);
   };
 
-  
+
 
 
   return (
@@ -417,10 +421,10 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
         <div
           className={`w-1/4 border-r border-gray-800 min-h-full md:py-0 box-border md:block
         ${showMessages ? "hidden" : "block"} 
-        md:w-1/4
+        md:w-1/4 flex flex-col
         fixed top-0 left-0 w-full h-full z-20 md:static md:z-auto p-5 box-border`}
         >
-          <div className="sm:h-[4%] md:h-16 w-full flex items-center justify-between  box-border mb-2">
+          <div className="sm:h-[4%] md:h-16 w-full flex items-center justify-between shrink-0 box-border mb-2">
             <h1 className="text-white text-2xl">MyChat</h1>
 
             <DropdownMenuBasic />
@@ -428,13 +432,13 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
           <SearchComponent selectChat={selectChat} />
         </div>
         <div
-        ref={chatContainerRef}
+          ref={chatContainerRef}
           className={`
     ${showMessages ? "flex" : "hidden"}
     flex flex-col w-full h-full min-h-0 overflow-hidden
     md:w-[75%]
   `}
-          // style={{ height: "var(--app-height)" }}
+        // style={{ height: "var(--app-height)" }}
         >
           {/* Header */}
 
