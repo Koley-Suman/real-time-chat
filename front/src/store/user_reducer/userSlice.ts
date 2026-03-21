@@ -24,12 +24,35 @@ export interface UserState {
   error: string | null;
 }
 
-const initialState: UserState = {
-  currentUser:
-    typeof window !== "undefined" && localStorage.getItem("currentUser")
-      ? JSON.parse(localStorage.getItem("currentUser")!)
-      : null,
+const getInitialUser = (): CurrentUser | null => {
+  if (typeof window !== "undefined") {
+    const userStr = localStorage.getItem("currentUser");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.token) {
+          // Decode the middle token part
+          const payloadStr = atob(user.token.split('.')[1]);
+          const payload = JSON.parse(payloadStr);
+          // Check expiration
+          if (payload.exp * 1000 < Date.now()) {
+            localStorage.removeItem("currentUser");
+            return null;
+          }
+          return user;
+        }
+        return user;
+      } catch (error) {
+        localStorage.removeItem("currentUser");
+        return null;
+      }
+    }
+  }
+  return null;
+};
 
+const initialState: UserState = {
+  currentUser: getInitialUser(),
   searchUser: [],
   loading: false,
   error: null,
