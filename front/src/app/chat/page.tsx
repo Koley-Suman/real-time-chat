@@ -68,6 +68,7 @@ function Chat() {
   const [drawerData, setDrawerData] = useState<any>(null);
   const [signOutDrawer, setSignOutDrawer] = useState(false);
   const [open, setOpen] = useState(false);
+  const [messageLoading, setMessageLoading] = useState(false);
 
   // console.log(newMessage);
 
@@ -144,6 +145,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const senduserMessage = async (e: any) => {
     e.preventDefault();
+    setMessageLoading(true);
     try {
       const data = await dispatch(
         sendMessage({
@@ -155,6 +157,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
       socket?.emit("new Message", data.payload);
       socket?.emit("stop typing", selectedChat);
       setNewMessage("");
+      setMessageLoading(false);
 
       setTimeout(() => {
         inputmessageRef.current?.focus();
@@ -162,6 +165,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
 
     } catch (error) {
       console.error("not send message");
+      setMessageLoading(false);
     }
   };
 
@@ -202,11 +206,6 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
     const newSocket = io(ENDPOINT);
     setSocket(newSocket);
     newSocket.on("connected", () => setSoctetConnection(true));
-    newSocket.on("typing", () => setIsTyping(true));
-    newSocket.on("stop typing", () => {
-      setIsTyping(false);
-      setTyping(false);
-    });
 
     return () => {
       newSocket.disconnect();
@@ -257,14 +256,30 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
       dispatch(updateSeen({ chatId, userId }));
     };
 
+    const handleTyping = (room: string) => {
+      if (room === selectedChat) {
+        setIsTyping(true);
+      }
+    };
+
+    const handleStopTyping = (room: string) => {
+      if (room === selectedChat) {
+        setIsTyping(false);
+      }
+    };
+
     socket.on("message received", handler);
     socket.on("message delivered", handleDelivered);
     socket.on("messages seen", handleSeen);
+    socket.on("typing", handleTyping);
+    socket.on("stop typing", handleStopTyping);
 
     return () => {
       socket.off("message received", handler);
       socket.off("message delivered", handleDelivered);
       socket.off("messages seen", handleSeen);
+      socket.off("typing", handleTyping);
+      socket.off("stop typing", handleStopTyping);
     };
   }, [socket, selectedChat, dispatch, currentUserId]);
   // useEffect(() => {
@@ -376,6 +391,7 @@ const chatContainerRef = useRef<HTMLDivElement>(null);
             handleKeyDown={handleKeyDown}
             senduserMessage={senduserMessage}
             inputmessageRef={inputmessageRef}
+            messageLoading={messageLoading}
           />
         </div>
       </div>

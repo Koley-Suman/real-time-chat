@@ -109,11 +109,11 @@ io.on("connection", (socket) => {
     });
 
     socket.on("typing", (room) => {
-        socket.to(room).emit("typing");
+        socket.to(room).emit("typing", room);
     });
 
     socket.on("stop typing", (room) => {
-        socket.to(room).emit("stop typing");
+        socket.to(room).emit("stop typing", room);
     });
 
     socket.on("messages seen", async ({ chatId, userId }) => {

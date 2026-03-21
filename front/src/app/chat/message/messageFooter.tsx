@@ -1,4 +1,4 @@
-import { SendHorizonalIcon, SmileIcon } from "lucide-react";
+import { Loader2Icon, SendHorizonalIcon, SmileIcon } from "lucide-react";
 import React, { useRef, useState } from "react";
 import ImageUploadPreview from "../messagePhoto";
 import { Input } from "@/components/ui/input";
@@ -6,15 +6,16 @@ import EmojiPicker from "emoji-picker-react";
 interface MessageHeaderProps {
   selectedChat: string;
   socket: any;
-  setNewMessage: React.Dispatch<React.SetStateAction<string>>; 
+  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
   typeHandeler: React.ChangeEventHandler<HTMLInputElement>;
   newMessage: string;
   handleKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
-  senduserMessage: (e:any) => void;
-  inputmessageRef:any;
+  senduserMessage: (e: any) => void;
+  inputmessageRef: any;
+  messageLoading: boolean;
 }
 
-const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMessage, handleKeyDown, senduserMessage,inputmessageRef }: MessageHeaderProps) => {
+const MessageFooter = ({ selectedChat, socket, setNewMessage, typeHandeler, newMessage, handleKeyDown, senduserMessage, inputmessageRef, messageLoading }: MessageHeaderProps) => {
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const inputRef = useRef(null);
@@ -41,7 +42,7 @@ const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMe
     setNewMessage((prev) => prev + emoji.emoji);
   };
 
-  
+
 
 
   return (
@@ -75,31 +76,39 @@ const MessageFooter = ({ selectedChat, socket,setNewMessage, typeHandeler, newMe
                 onKeyDown={handleKeyDown}
               />
             </div>
-            <div
-              className="w-[13%] md:w-[10%] flex justify-center items-center"
-                onMouseDown={(e) => e.preventDefault()}
-              onClick={senduserMessage}
-            >
-              <SendHorizonalIcon
-                className={`text-slate font-thin ${
-                  newMessage.length > 0 ? "block" : "hidden"
-                }`}
-              />
-            </div>
+            {
+              messageLoading ? (
+                <div className="w-[13%] md:w-[10%] flex justify-center items-center">
+                  <Loader2Icon className="animate-spin" size={22} />
+                </div>
+              ) : (
+                <div
+                  className="w-[13%] md:w-[10%] flex justify-center items-center cursor-pointer"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={senduserMessage}
+                >
+                  <SendHorizonalIcon
+                    className={`text-slate font-thin ${newMessage.length > 0 ? "block" : "hidden"
+                      }`}
+                  />
+                </div>
+              )
+            }
+
           </React.Fragment>
         ) : (
           ""
         )}
       </div>
       {showEmojiPicker && (
-              <div className="absolute bottom-6 left-10 w-fit z-50">
-                <EmojiPicker
-                  onEmojiClick={handleEmojiSelect}
-                  width={250}
-                  height={300}
-                />
-              </div>
-            )}
+        <div className="absolute bottom-6 left-10 w-fit z-50">
+          <EmojiPicker
+            onEmojiClick={handleEmojiSelect}
+            width={250}
+            height={300}
+          />
+        </div>
+      )}
     </div>
   );
 };
